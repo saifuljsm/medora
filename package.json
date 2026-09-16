@@ -9,7 +9,9 @@
     "lint": "next lint",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "worker:expiry-check": "tsx lib/workers/expiry-check-worker.ts",
+    "worker:meilisearch-sync": "tsx lib/workers/meilisearch-sync-worker.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
