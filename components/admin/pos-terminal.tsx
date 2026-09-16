@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createPosSale, type CreatePosSaleResult } from "@/app/(admin)/pos/actions";
+import { createAndApprovePrescriptionForPos } from "@/app/(admin)/pos/prescription-actions";
 
 interface PosProduct {
   id: string;
@@ -59,7 +60,14 @@ export function PosTerminal({ branchId, products }: { branchId: string; products
   const [error, setError] = useState<string | null>(null);
   const [receipt, setReceipt] = useState<{ invoiceNumber: string; total: number } | null>(null);
 
+  const [prescriptionImageUrl, setPrescriptionImageUrl] = useState("");
+  const [prescriptionId, setPrescriptionId] = useState<string | null>(null);
+  const [prescriptionError, setPrescriptionError] = useState<string | null>(null);
+  const [isApprovingPrescription, setIsApprovingPrescription] = useState(false);
+
   const productsById = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
+
+  const hasRxItems = cart.some((line) => productsById.get(line.productId)?.requiresPrescription);
 
   const results = useMemo(() => {
     if (!query.trim()) return [];
@@ -113,10 +121,33 @@ export function PosTerminal({ branchId, products }: { branchId: string; products
   const tendered = Number(cashTendered) || 0;
   const change = paymentMethod === "CASH" ? Math.max(0, tendered - total) : 0;
 
+  async function handleApprovePrescription() {
+    setPrescriptionError(null);
+    if (!prescriptionImageUrl.trim()) {
+      setPrescriptionError("Enter a prescription photo link");
+      return;
+    }
+    setIsApprovingPrescription(true);
+    const result = await createAndApprovePrescriptionForPos({
+      imageUrl: prescriptionImageUrl.trim(),
+      branchId,
+    });
+    setIsApprovingPrescription(false);
+    if (!result.success) {
+      setPrescriptionError(result.error);
+      return;
+    }
+    setPrescriptionId(result.prescriptionId);
+  }
+
   async function handleSubmit() {
     setError(null);
     if (cart.length === 0) {
       setError("Cart is empty");
+      return;
+    }
+    if (hasRxItems && !prescriptionId) {
+      setError("Attach an approved prescription before completing this sale");
       return;
     }
     if (paymentMethod === "CASH" && tendered < total) {
@@ -130,6 +161,7 @@ export function PosTerminal({ branchId, products }: { branchId: string; products
       paymentMethod,
       customerPhone: customerPhone.trim() || undefined,
       customerName: customerName.trim() || undefined,
+      prescriptionId: hasRxItems ? prescriptionId ?? undefined : undefined,
       items: cart.map((l) => ({ productId: l.productId, saleUnit: l.saleUnit, quantity: l.quantity })),
     });
     setIsSubmitting(false);
@@ -144,6 +176,8 @@ export function PosTerminal({ branchId, products }: { branchId: string; products
     setCustomerPhone("");
     setCustomerName("");
     setCashTendered("");
+    setPrescriptionId(null);
+    setPrescriptionImageUrl("");
   }
 
   return (
@@ -235,6 +269,31 @@ export function PosTerminal({ branchId, products }: { branchId: string; products
           </div>
         )}
 
+        {hasRxItems && (
+          <div className="flex flex-col gap-2 rounded-md border border-warning bg-warning-tint p-3">
+            <p className="text-sm font-semibold text-warning">Prescription required</p>
+            {prescriptionId ? (
+              <p className="text-sm text-mint-dark">Approved and attached — ready to complete this sale.</p>
+            ) : (
+              <>
+                <p className="text-xs text-muted-foreground">
+                  A pharmacist (or the owner) must review the paper prescription and approve it here before this
+                  sale can be completed.
+                </p>
+                {prescriptionError && <p className="text-xs text-destructive">{prescriptionError}</p>}
+                <Input
+                  placeholder="Prescription photo link"
+                  value={prescriptionImageUrl}
+                  onChange={(e) => setPrescriptionImageUrl(e.target.value)}
+                />
+                <Button type="button" size="sm" onClick={handleApprovePrescription} disabled={isApprovingPrescription}>
+                  {isApprovingPrescription ? "Approving…" : "Approve & attach"}
+                </Button>
+              </>
+            )}
+          </div>
+        )}
+
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-medium text-muted-foreground">Customer phone (optional)</label>
           <Input value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} placeholder="01XXXXXXXXX" />
@@ -290,7 +349,7 @@ export function PosTerminal({ branchId, products }: { branchId: string; products
           )}
         </div>
 
-        <Button onClick={handleSubmit} disabled={isSubmitting || cart.length === 0} size="lg">
+        <Button onClick={handleSubmit} disabled={isSubmitting || cart.length === 0 || (hasRxItems && !prescriptionId)} size="lg">
           {isSubmitting ? "Processing…" : "Complete sale"}
         </Button>
       </div>

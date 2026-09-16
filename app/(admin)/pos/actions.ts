@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { allocateFefoStock, InsufficientStockError } from "@/lib/stock";
 import { resolveSaleLinePricing, computeLineVat, Decimal } from "@/lib/pricing";
 import { getNextInvoiceNumber } from "@/lib/invoice";
+import { assertPrescriptionRequirementsMet, PrescriptionRequiredError } from "@/lib/prescription-gate";
 
 // POS-realistic payment methods only — COD and ONLINE_GATEWAY are ecommerce
 // concepts (Phase 2), not something a cashier picks at the till.
@@ -24,6 +25,7 @@ const CreatePosSaleSchema = z.object({
   paymentMethod: z.enum(POS_PAYMENT_METHODS),
   customerPhone: z.string().optional(),
   customerName: z.string().optional(),
+  prescriptionId: z.string().optional(),
   items: z.array(CartLineSchema).min(1, "Cart is empty"),
 });
 
@@ -33,13 +35,6 @@ export type CreatePosSaleResult =
   | { success: true; invoiceNumber: string; total: number }
   | { success: false; error: string };
 
-// TODO(Phase 1.6): a Sale containing a SaleItem whose Medicine.requiresPrescription
-// is true must not reach COMPLETED until a linked Prescription is APPROVED.
-// This action currently completes every sale immediately regardless of Rx
-// items — the pharmacist review gate is Phase 1.6's explicit deliverable,
-// inserted into this same transaction. Until then, Rx items are flagged in
-// the POS UI for staff awareness only, which is NOT sufficient enforcement
-// on its own per the build spec §8 — do not treat this as done.
 export async function createPosSale(input: CreatePosSaleInput): Promise<CreatePosSaleResult> {
   const session = await auth();
   if (!session?.user) return { success: false, error: "Not signed in" };
@@ -58,6 +53,12 @@ export async function createPosSale(input: CreatePosSaleInput): Promise<CreatePo
 
   try {
     const result = await prisma.$transaction(async (tx) => {
+      await assertPrescriptionRequirementsMet(tx, {
+        orgId: session.user.orgId,
+        productIds: Array.from(new Set(data.items.map((item) => item.productId))),
+        prescriptionId: data.prescriptionId,
+      });
+
       let customerId: string | null = null;
       const phone = data.customerPhone?.trim();
       if (phone) {
@@ -122,12 +123,19 @@ export async function createPosSale(input: CreatePosSaleInput): Promise<CreatePo
         },
       });
 
+      if (data.prescriptionId) {
+        await tx.prescription.update({
+          where: { id: data.prescriptionId },
+          data: { saleId: sale.id },
+        });
+      }
+
       return { invoiceNumber: sale.invoiceNumber!, total: total.toNumber() };
     });
 
     return { success: true, ...result };
   } catch (error) {
-    if (error instanceof InsufficientStockError) {
+    if (error instanceof InsufficientStockError || error instanceof PrescriptionRequiredError) {
       return { success: false, error: error.message };
     }
     return { success: false, error: error instanceof Error ? error.message : "Sale failed" };
