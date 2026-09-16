@@ -9,7 +9,7 @@ import { AdminShell } from "@/components/admin/admin-shell";
 // actually enforces role scope.
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  if (!session?.user) redirect("/login");
+  if (!session?.user || session.user.type !== "staff") redirect("/login");
   if (session.user.mustChangePassword) redirect("/change-password");
 
   return <AdminShell user={session.user}>{children}</AdminShell>;

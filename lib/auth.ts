@@ -3,6 +3,8 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import type { Role } from "@prisma/client";
+import { verifyOtp } from "@/lib/otp";
+import { getOrg } from "@/lib/org";
 
 const FAILED_LOGIN_LOCK_THRESHOLD = 5;
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
@@ -10,6 +12,7 @@ const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
 declare module "next-auth" {
   interface Session {
     user: {
+      type: "staff" | "customer";
       id: string;
       orgId: string;
       branchId: string | null;
@@ -17,19 +20,23 @@ declare module "next-auth" {
       mustChangePassword: boolean;
       name: string;
       email: string;
+      phone: string | null;
     };
   }
 }
 
 interface AppJWT {
+  type: "staff" | "customer";
   id: string;
   orgId: string;
   branchId: string | null;
   roles: Role[];
   mustChangePassword: boolean;
+  phone: string | null;
 }
 
 interface AuthorizedUser {
+  type: "staff" | "customer";
   id: string;
   orgId: string;
   branchId: string | null;
@@ -37,6 +44,7 @@ interface AuthorizedUser {
   mustChangePassword: boolean;
   name: string;
   email: string;
+  phone: string | null;
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -94,6 +102,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // a specific build-order phase; needs its own TOTP setup/verify UI.
 
         return {
+          type: "staff",
           id: user.id,
           orgId: user.orgId,
           branchId: user.branchId,
@@ -101,6 +110,47 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           mustChangePassword: user.mustChangePassword,
           name: user.name,
           email: user.email,
+          phone: user.phone,
+        };
+      },
+    }),
+
+    // Customer login — phone + OTP. The OTP itself is requested via a
+    // separate server action (app/(storefront)/account/actions.ts) that
+    // calls lib/otp.ts + lib/sms.ts; this provider only ever verifies a
+    // code that's already been issued.
+    Credentials({
+      id: "customer-otp",
+      name: "Customer OTP",
+      credentials: {
+        phone: { label: "Phone", type: "text" },
+        code: { label: "Code", type: "text" },
+      },
+      async authorize(credentials) {
+        const phone = (credentials?.phone as string | undefined)?.trim();
+        const code = (credentials?.code as string | undefined)?.trim();
+        if (!phone || !code) return null;
+
+        const valid = await verifyOtp(phone, code);
+        if (!valid) return null;
+
+        const org = await getOrg();
+        const customer = await prisma.customer.upsert({
+          where: { orgId_phone: { orgId: org.id, phone } },
+          update: { phoneVerifiedAt: new Date() },
+          create: { orgId: org.id, phone, phoneVerifiedAt: new Date() },
+        });
+
+        return {
+          type: "customer",
+          id: customer.id,
+          orgId: customer.orgId,
+          branchId: null,
+          roles: [],
+          mustChangePassword: false,
+          name: customer.name ?? "",
+          email: customer.email ?? "",
+          phone: customer.phone,
         };
       },
     }),
@@ -110,11 +160,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const appToken = token as unknown as AppJWT;
       if (user) {
         const authorizedUser = user as unknown as AuthorizedUser;
+        appToken.type = authorizedUser.type;
         appToken.id = authorizedUser.id;
         appToken.orgId = authorizedUser.orgId;
         appToken.branchId = authorizedUser.branchId;
         appToken.roles = authorizedUser.roles;
         appToken.mustChangePassword = authorizedUser.mustChangePassword;
+        appToken.phone = authorizedUser.phone;
       }
       // Lets the client call useSession().update({ mustChangePassword: false })
       // right after a successful password change, instead of forcing a
@@ -126,11 +178,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async session({ session, token }) {
       const appToken = token as unknown as AppJWT;
+      session.user.type = appToken.type;
       session.user.id = appToken.id;
       session.user.orgId = appToken.orgId;
       session.user.branchId = appToken.branchId;
       session.user.roles = appToken.roles;
       session.user.mustChangePassword = appToken.mustChangePassword;
+      session.user.phone = appToken.phone;
       return session;
     },
   },

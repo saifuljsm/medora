@@ -3,7 +3,7 @@ import Image from "next/image";
 import { User, LayoutGrid, ShoppingCart } from "lucide-react";
 import { HeaderSearch } from "@/components/storefront/header-search";
 
-export function Topbar({ cartCount = 0 }: { cartCount?: number }) {
+export function Topbar({ cartCount = 0, customerName }: { cartCount?: number; customerName?: string | null }) {
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-border bg-card">
       <div className="mx-auto w-full max-w-[430px] sm:max-w-2xl md:max-w-4xl lg:max-w-none lg:px-8 xl:px-12">
@@ -39,14 +39,12 @@ export function Topbar({ cartCount = 0 }: { cartCount?: number }) {
               <span className="bg-primary px-[9px] py-1.5 text-white">EN</span>
               <span className="px-[9px] py-1.5 text-muted-text">বাং</span>
             </div>
-            {/* TODO: customer auth doesn't exist yet — this always reads "Account", not a real
-                Sign In / Profile distinction, since there's no session to tell them apart. */}
             <Link
               href="/account"
               className="flex h-9 items-center gap-1.5 rounded-full border border-border bg-card px-3 text-sm font-semibold text-foreground lg:h-[38px]"
             >
               <User className="h-4 w-4" strokeWidth={2} />
-              <span className="hidden sm:inline">Account</span>
+              <span className="hidden sm:inline">{customerName ? customerName.split(" ")[0] : "Sign In"}</span>
             </Link>
           </div>
         </div>

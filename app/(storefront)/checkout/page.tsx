@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { getOrg } from "@/lib/org";
 import { getCartId, hydrateCart } from "@/lib/cart";
 import { CheckoutForm } from "@/components/storefront/checkout-form";
@@ -6,17 +7,23 @@ import { CheckoutForm } from "@/components/storefront/checkout-form";
 export const dynamic = "force-dynamic";
 
 export default async function CheckoutPage() {
-  const org = await getOrg();
+  const [session, org] = await Promise.all([auth(), getOrg()]);
   const cart = await hydrateCart(org.id, getCartId());
 
   if (cart.lines.length === 0) redirect("/cart");
   if (cart.hasIssues) redirect("/cart");
 
+  const isCustomer = session?.user?.type === "customer";
+
   return (
     <div className="pt-4 lg:grid lg:grid-cols-[1.2fr_1fr] lg:gap-8 lg:px-0 lg:pt-6">
       <div>
         <h1 className="mb-3.5 text-lg font-bold text-foreground">Checkout</h1>
-        <CheckoutForm requiresPrescription={cart.requiresPrescription} />
+        <CheckoutForm
+          requiresPrescription={cart.requiresPrescription}
+          initialName={isCustomer ? session!.user.name : ""}
+          initialPhone={isCustomer ? session!.user.phone ?? "" : ""}
+        />
       </div>
 
       <div className="mt-5 lg:mt-0">

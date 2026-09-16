@@ -6,13 +6,21 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createOnlineSale } from "@/app/(storefront)/checkout/actions";
 
-export function CheckoutForm({ requiresPrescription }: { requiresPrescription: boolean }) {
+export function CheckoutForm({
+  requiresPrescription,
+  initialName = "",
+  initialPhone = "",
+}: {
+  requiresPrescription: boolean;
+  initialName?: string;
+  initialPhone?: string;
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
-    name: "",
-    phone: "",
+    name: initialName,
+    phone: initialPhone,
     email: "",
     division: "",
     district: "Kushtia",

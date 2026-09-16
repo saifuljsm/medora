@@ -1,20 +1,69 @@
-import { User } from "lucide-react";
+import { User, Package } from "lucide-react";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { CustomerSignInForm } from "@/components/storefront/customer-sign-in-form";
+import { CustomerSignOutButton } from "@/components/storefront/customer-account-panel";
 
-// Customer accounts need customer auth (OTP + Google/Facebook), which the
-// build spec doesn't assign to a specific numbered phase — it's referenced
-// in the tech stack and lib/ module list, but guest checkout (spec §8 rule
-// 8) is the primary V1 ecommerce path. This is a placeholder until that
-// lands.
-export default function AccountPage() {
-  return (
-    <div className="flex flex-col items-center gap-3 px-0 pt-16 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-tint">
-        <User className="h-6 w-6 text-primary" strokeWidth={2} />
+export const dynamic = "force-dynamic";
+
+export default async function AccountPage() {
+  const session = await auth();
+  const isCustomer = session?.user?.type === "customer";
+
+  if (!isCustomer) {
+    return (
+      <div className="mx-auto max-w-sm pt-10 lg:pt-6">
+        <div className="mb-5 flex flex-col items-center gap-2 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-tint">
+            <User className="h-6 w-6 text-primary" strokeWidth={2} />
+          </div>
+          <p className="text-sm font-semibold text-foreground">Sign in with your phone</p>
+          <p className="max-w-xs text-xs text-muted-foreground">We&apos;ll text you a one-time code — no password needed.</p>
+        </div>
+        <CustomerSignInForm />
       </div>
-      <p className="text-sm font-semibold text-foreground">Sign in to view your account</p>
-      <p className="max-w-xs text-xs text-muted-foreground">
-        Customer accounts (order history, saved addresses) are coming soon. You can still check out as a guest.
-      </p>
+    );
+  }
+
+  const orders = await prisma.sale.findMany({
+    where: { customerId: session.user.id, channel: "ONLINE" },
+    orderBy: { createdAt: "desc" },
+    take: 20,
+  });
+
+  return (
+    <div className="mx-auto max-w-lg pt-6 lg:pt-6">
+      <div className="mb-5 flex items-center justify-between">
+        <div>
+          <p className="text-lg font-bold text-foreground">{session.user.name || session.user.phone}</p>
+          {session.user.name && <p className="text-sm text-muted-foreground">{session.user.phone}</p>}
+        </div>
+        <CustomerSignOutButton />
+      </div>
+
+      <h2 className="mb-2.5 text-sm font-bold text-foreground">Your orders</h2>
+      {orders.length === 0 ? (
+        <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">No orders yet.</p>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {orders.map((o) => (
+            <a
+              key={o.id}
+              href={`/order-confirmation/${o.id}`}
+              className="flex items-center gap-3 rounded-xl border border-border bg-card p-3.5 hover:border-primary"
+            >
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-tint">
+                <Package className="h-4 w-4 text-primary" strokeWidth={2} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-foreground">{o.invoiceNumber}</p>
+                <p className="text-xs text-muted-text">{o.status.replace("_", " ")}</p>
+              </div>
+              <span className="shrink-0 text-sm font-bold text-primary">৳{o.total.toString()}</span>
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
