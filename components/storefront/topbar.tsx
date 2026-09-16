@@ -14,8 +14,7 @@ export function Topbar() {
           {/* Desktop: search bar + nav links inline, no bottom nav (that's mobile-only). */}
           <div className="hidden flex-1 items-center gap-8 lg:flex">
             <Link href="/search" className="flex max-w-xl flex-1 items-center rounded-xl bg-primary-tint py-1 pl-4 pr-1">
-              <Search className="h-[18px] w-[18px] shrink-0 text-muted-foreground" strokeWidth={2} />
-              <span className="flex-1 px-2.5 text-sm text-muted-text">Search medicine, e.g. Napa</span>
+              <span className="flex-1 text-sm text-muted-text">Search medicine, e.g. Napa</span>
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-mint">
                 <Search className="h-4 w-4 text-white" strokeWidth={2.5} />
               </span>
@@ -56,8 +55,7 @@ export function Topbar() {
         </div>
         <div className="px-4 pb-3 lg:hidden">
           <Link href="/search" className="flex items-center rounded-xl bg-primary-tint py-1 pl-3 pr-1">
-            <Search className="h-[18px] w-[18px] shrink-0 text-muted-foreground" strokeWidth={2} />
-            <span className="flex-1 px-2.5 text-[14.5px] text-muted-text">Search medicine, e.g. Napa</span>
+            <span className="flex-1 text-[14.5px] text-muted-text">Search medicine, e.g. Napa</span>
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-mint">
               <Search className="h-4 w-4 text-white" strokeWidth={2.5} />
             </span>
