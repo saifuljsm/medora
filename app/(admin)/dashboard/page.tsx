@@ -9,6 +9,7 @@ const QUICK_LINKS = [
   { href: "/prescriptions", label: "Prescription review" },
   { href: "/orders", label: "Online orders" },
   { href: "/couriers", label: "Couriers" },
+  { href: "/coupons", label: "Coupons" },
   { href: "/returns", label: "Returns" },
   { href: "/reconciliation", label: "Cash reconciliation" },
   { href: "/reports/sales", label: "Sales report" },

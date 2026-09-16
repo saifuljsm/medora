@@ -30,7 +30,12 @@ export default async function OrdersPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-8">
-      <h1 className="text-xl font-bold text-foreground">Online orders</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold text-foreground">Online orders</h1>
+        <Link href="/orders/new" className="rounded-md bg-primary px-3.5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-dark">
+          + New order
+        </Link>
+      </div>
 
       <div className="mt-5 overflow-hidden rounded-xl border border-border bg-card">
         {orders.length === 0 ? (
