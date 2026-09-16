@@ -29,12 +29,15 @@ export function productToCard(
 
   let price: number;
   let priceLabel = "";
+  let defaultSaleUnit: "PIECE" | "PACK" = "PACK";
   if (product.sellsByUnit) {
     if (packPrice != null) {
       price = packPrice;
+      defaultSaleUnit = "PACK";
     } else if (unitPrice != null) {
       price = unitPrice;
       priceLabel = "from";
+      defaultSaleUnit = "PIECE";
     } else {
       price = 0;
     }
@@ -55,6 +58,7 @@ export function productToCard(
     mrp,
     price,
     priceLabel,
+    defaultSaleUnit,
   };
 }
 

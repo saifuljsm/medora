@@ -4,7 +4,7 @@ import { User, LayoutGrid, ShoppingCart } from "lucide-react";
 import { HeaderSearch } from "@/components/storefront/header-search";
 import type { StorefrontProductCard } from "@/components/storefront/product-card";
 
-export function Topbar({ products }: { products: StorefrontProductCard[] }) {
+export function Topbar({ products, cartCount = 0 }: { products: StorefrontProductCard[]; cartCount?: number }) {
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-border bg-card">
       <div className="mx-auto w-full max-w-[430px] sm:max-w-2xl md:max-w-4xl lg:max-w-none lg:px-8 xl:px-12">
@@ -23,10 +23,11 @@ export function Topbar({ products }: { products: StorefrontProductCard[] }) {
               <Link href="/cart" className="flex items-center gap-1.5 hover:text-primary">
                 <span className="relative">
                   <ShoppingCart className="h-4 w-4" strokeWidth={2} />
-                  {/* TODO(Phase 2.4): real cart count once the Redis-backed cart exists — 0 is accurate today. */}
-                  <span className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-success text-[8px] font-bold text-white">
-                    0
-                  </span>
+                  {cartCount > 0 && (
+                    <span className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-success text-[8px] font-bold text-white">
+                      {cartCount > 9 ? "9+" : cartCount}
+                    </span>
+                  )}
                 </span>
                 Cart
               </Link>

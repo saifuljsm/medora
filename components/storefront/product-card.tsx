@@ -13,6 +13,7 @@ export interface StorefrontProductCard {
   mrp: number | null;
   price: number;
   priceLabel: string; // e.g. "" or "from" for per-piece breakable products
+  defaultSaleUnit: "PIECE" | "PACK"; // which unit a one-tap "Add to cart" adds
 }
 
 function stockLabel(stock: number): { text: string; className: string } {
@@ -65,7 +66,7 @@ export function ProductCard({ product, wide = false }: { product: StorefrontProd
           {offPercent > 0 && <span className="text-[11px] text-muted-text line-through">৳{product.mrp!.toFixed(2)}</span>}
         </div>
         <span className={`text-[10px] ${stock.className}`}>{stock.text}</span>
-        <AddToCartButton productId={product.id} disabled={product.stock <= 0} />
+        <AddToCartButton productId={product.id} saleUnit={product.defaultSaleUnit} disabled={product.stock <= 0} />
       </div>
     </Link>
   );

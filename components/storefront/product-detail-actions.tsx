@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
+import { addToCartAction } from "@/app/(storefront)/cart/actions";
 
 interface UnitOption {
   unit: "PIECE" | "PACK";
@@ -13,14 +14,17 @@ export function ProductDetailActions({ productId, options }: { productId: string
   const [selected, setSelected] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const option = options[selected];
   const lineTotal = option.price * quantity;
 
   function handleAddToCart() {
-    // TODO(Phase 2.4): cart is Redis-backed and doesn't exist yet — wire
-    // this up to the real add-to-cart action once it does.
-    setMessage("Cart isn't wired up yet — coming very soon.");
+    startTransition(async () => {
+      await addToCartAction({ productId, saleUnit: option.unit, quantity });
+      setMessage("Added to cart.");
+      setTimeout(() => setMessage(null), 2000);
+    });
   }
 
   return (
@@ -68,8 +72,13 @@ export function ProductDetailActions({ productId, options }: { productId: string
 
       <div className="sticky bottom-0 -mx-4 -mb-4 mt-4 flex items-center gap-2.5 border-t border-border bg-card p-4 pb-[calc(12px+env(safe-area-inset-bottom))] lg:static lg:mx-0 lg:mb-0 lg:mt-6 lg:rounded-xl lg:border lg:p-4">
         <div className="shrink-0 text-base font-bold text-foreground">৳{lineTotal.toFixed(2)}</div>
-        <Button onClick={handleAddToCart} className="flex-1 bg-mint text-white hover:bg-mint/90" data-product-id={productId}>
-          Add to cart
+        <Button
+          onClick={handleAddToCart}
+          disabled={isPending}
+          className="flex-1 bg-mint text-white hover:bg-mint/90"
+          data-product-id={productId}
+        >
+          {isPending ? "Adding…" : "Add to cart"}
         </Button>
       </div>
     </>
