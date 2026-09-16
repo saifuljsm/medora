@@ -4,7 +4,7 @@ import { Search, User, LayoutGrid, ShoppingCart } from "lucide-react";
 export function Topbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-border bg-card">
-      <div className="mx-auto w-full max-w-[430px] sm:max-w-2xl md:max-w-4xl lg:max-w-6xl lg:px-8">
+      <div className="mx-auto w-full max-w-[430px] sm:max-w-2xl md:max-w-4xl lg:max-w-none lg:px-8 xl:px-12">
         <div className="flex items-center justify-between px-4 pb-2 pt-3 lg:px-0 lg:py-4">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-[9px] bg-primary">
@@ -18,7 +18,7 @@ export function Topbar() {
 
           {/* Desktop: search bar + nav links inline, no bottom nav (that's mobile-only). */}
           <div className="hidden flex-1 items-center gap-6 px-10 lg:flex">
-            <Link href="/search" className="flex flex-1 items-center gap-2 rounded-xl bg-primary-tint px-4 py-2.5">
+            <Link href="/search" className="flex max-w-xl flex-1 items-center gap-2 rounded-xl bg-primary-tint px-4 py-2.5">
               <Search className="h-[18px] w-[18px] shrink-0 text-muted-foreground" strokeWidth={2} />
               <span className="text-sm text-muted-text">Search medicine, e.g. Napa</span>
             </Link>
