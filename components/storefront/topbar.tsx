@@ -27,7 +27,14 @@ export function Topbar() {
                 <LayoutGrid className="h-4 w-4" strokeWidth={2} /> Categories
               </Link>
               <Link href="/cart" className="flex items-center gap-1.5 hover:text-primary">
-                <ShoppingCart className="h-4 w-4" strokeWidth={2} /> Cart
+                <span className="relative">
+                  <ShoppingCart className="h-4 w-4" strokeWidth={2} />
+                  {/* TODO(Phase 2.4): real cart count once the Redis-backed cart exists — 0 is accurate today. */}
+                  <span className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-mint text-[8px] font-bold text-white">
+                    0
+                  </span>
+                </span>
+                Cart
               </Link>
             </nav>
           </div>
