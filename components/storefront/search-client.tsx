@@ -5,8 +5,8 @@ import { Search as SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ProductCard, type StorefrontProductCard } from "@/components/storefront/product-card";
 
-export function SearchClient({ products }: { products: StorefrontProductCard[] }) {
-  const [query, setQuery] = useState("");
+export function SearchClient({ products, initialQuery = "" }: { products: StorefrontProductCard[]; initialQuery?: string }) {
+  const [query, setQuery] = useState(initialQuery);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
