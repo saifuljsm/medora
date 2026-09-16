@@ -1,18 +1,31 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Search as SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ProductCard, type StorefrontProductCard } from "@/components/storefront/product-card";
+import { searchStorefrontProducts } from "@/app/(storefront)/search/actions";
 
-export function SearchClient({ products, initialQuery = "" }: { products: StorefrontProductCard[]; initialQuery?: string }) {
+const DEBOUNCE_MS = 250;
+
+export function SearchClient({ initialQuery = "" }: { initialQuery?: string }) {
   const [query, setQuery] = useState(initialQuery);
+  const [results, setResults] = useState<StorefrontProductCard[]>([]);
+  const [isPending, startTransition] = useTransition();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return [];
-    return products.filter((p) => p.brandName.toLowerCase().includes(q) || p.genericLabel.toLowerCase().includes(q));
-  }, [products, query]);
+  useEffect(() => {
+    const q = query.trim();
+    if (!q) {
+      setResults([]);
+      return;
+    }
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      startTransition(async () => setResults(await searchStorefrontProducts(q)));
+    }, DEBOUNCE_MS);
+    return () => clearTimeout(debounceRef.current);
+  }, [query]);
 
   return (
     <div className="pt-4 lg:px-0">
@@ -35,7 +48,7 @@ export function SearchClient({ products, initialQuery = "" }: { products: Storef
         </div>
       )}
 
-      {query && results.length === 0 && (
+      {query && !isPending && results.length === 0 && (
         <div className="py-8 text-center">
           <p className="mb-1 text-sm font-semibold text-foreground">No products found</p>
           <span className="text-xs text-muted-foreground">Try a different name or generic — or ask our pharmacist on WhatsApp.</span>

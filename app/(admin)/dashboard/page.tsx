@@ -10,6 +10,7 @@ const QUICK_LINKS = [
   { href: "/orders", label: "Online orders" },
   { href: "/couriers", label: "Couriers" },
   { href: "/coupons", label: "Coupons" },
+  { href: "/settings/domain", label: "Custom domain" },
   { href: "/returns", label: "Returns" },
   { href: "/reconciliation", label: "Cash reconciliation" },
   { href: "/reports/sales", label: "Sales report" },

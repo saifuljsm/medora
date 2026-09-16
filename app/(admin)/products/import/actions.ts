@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
+import { meilisearchSyncQueue } from "@/lib/queue";
 import {
   parseWorkbookBuffer,
   validateImportRows,
@@ -41,6 +42,7 @@ export async function commitProductImport(
   await requireCatalogManager();
 
   const result: CommitImportResult = { created: 0, updated: 0, failed: [] };
+  const syncedProductIds: string[] = [];
 
   for (const { rowNumber, data: rawData } of rows) {
     // Defense in depth: never trust "already validated" data handed back
@@ -107,9 +109,11 @@ export async function commitProductImport(
       if (existingProduct) {
         await prisma.product.update({ where: { id: existingProduct.id }, data: productData });
         result.updated++;
+        syncedProductIds.push(existingProduct.id);
       } else {
-        await prisma.product.create({ data: productData });
+        const created = await prisma.product.create({ data: productData });
         result.created++;
+        syncedProductIds.push(created.id);
       }
     } catch (error) {
       result.failed.push({
@@ -118,6 +122,10 @@ export async function commitProductImport(
         reason: error instanceof Error ? error.message : "Unknown error",
       });
     }
+  }
+
+  if (syncedProductIds.length > 0) {
+    await meilisearchSyncQueue.add("sync", { productIds: syncedProductIds });
   }
 
   return result;

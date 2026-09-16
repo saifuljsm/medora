@@ -2,9 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { User, LayoutGrid, ShoppingCart } from "lucide-react";
 import { HeaderSearch } from "@/components/storefront/header-search";
-import type { StorefrontProductCard } from "@/components/storefront/product-card";
 
-export function Topbar({ products, cartCount = 0 }: { products: StorefrontProductCard[]; cartCount?: number }) {
+export function Topbar({ cartCount = 0 }: { cartCount?: number }) {
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-border bg-card">
       <div className="mx-auto w-full max-w-[430px] sm:max-w-2xl md:max-w-4xl lg:max-w-none lg:px-8 xl:px-12">
@@ -15,7 +14,7 @@ export function Topbar({ products, cartCount = 0 }: { products: StorefrontProduc
 
           {/* Desktop: search bar + nav links inline, no bottom nav (that's mobile-only). */}
           <div className="hidden flex-1 items-center gap-8 lg:flex">
-            <HeaderSearch products={products} />
+            <HeaderSearch />
             <nav className="flex items-center gap-5 text-sm font-medium text-foreground">
               <Link href="/categories" className="flex items-center gap-1.5 hover:text-primary">
                 <LayoutGrid className="h-4 w-4" strokeWidth={2} /> Categories
@@ -52,7 +51,7 @@ export function Topbar({ products, cartCount = 0 }: { products: StorefrontProduc
           </div>
         </div>
         <div className="px-0 pb-3 lg:hidden">
-          <HeaderSearch products={products} compact />
+          <HeaderSearch compact />
         </div>
       </div>
     </header>

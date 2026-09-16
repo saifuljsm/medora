@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { Search, Pill } from "lucide-react";
+import { searchStorefrontProducts } from "@/app/(storefront)/search/actions";
 import type { StorefrontProductCard } from "@/components/storefront/product-card";
+
+const DEBOUNCE_MS = 250;
 
 /**
  * Lives in the header, in the same place on every page — typing shows a
@@ -12,19 +15,34 @@ import type { StorefrontProductCard } from "@/components/storefront/product-card
  * own search bar sat in a different spot, which felt like the bar itself
  * had jumped somewhere else. Clicking an actual result still navigates,
  * since that's an explicit choice, not a surprise relocation.
+ *
+ * Queries the server (Meilisearch when configured, Postgres ILIKE
+ * otherwise) rather than filtering a client-side copy of the whole
+ * catalog — that stopped scaling past a handful of demo products.
  */
-export function HeaderSearch({ products, compact = false }: { products: StorefrontProductCard[]; compact?: boolean }) {
+export function HeaderSearch({ compact = false }: { compact?: boolean }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const [results, setResults] = useState<StorefrontProductCard[]>([]);
+  const [isPending, startTransition] = useTransition();
   const containerRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return [];
-    return products
-      .filter((p) => p.brandName.toLowerCase().includes(q) || p.genericLabel.toLowerCase().includes(q))
-      .slice(0, 8);
-  }, [products, query]);
+  useEffect(() => {
+    const q = query.trim();
+    if (!q) {
+      setResults([]);
+      return;
+    }
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      startTransition(async () => {
+        const hits = await searchStorefrontProducts(q);
+        setResults(hits.slice(0, 8));
+      });
+    }, DEBOUNCE_MS);
+    return () => clearTimeout(debounceRef.current);
+  }, [query]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -58,7 +76,7 @@ export function HeaderSearch({ products, compact = false }: { products: Storefro
       {open && query.trim() && (
         <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-card shadow-lg">
           {results.length === 0 ? (
-            <p className="p-4 text-center text-sm text-muted-foreground">No products found</p>
+            <p className="p-4 text-center text-sm text-muted-foreground">{isPending ? "Searching…" : "No products found"}</p>
           ) : (
             <>
               {results.map((p) => (
