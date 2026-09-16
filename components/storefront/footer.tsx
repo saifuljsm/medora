@@ -5,7 +5,7 @@ import { Phone, MessageCircle } from "lucide-react";
 export function Footer() {
   return (
     <footer className="mt-8 bg-foreground text-background">
-      <div className="mx-auto grid max-w-[430px] grid-cols-1 gap-8 px-3 py-10 sm:max-w-2xl md:max-w-4xl lg:max-w-6xl lg:grid-cols-3 lg:gap-6 lg:px-8">
+      <div className="mx-auto grid max-w-[430px] grid-cols-1 gap-8 px-0 py-10 sm:max-w-2xl md:max-w-4xl lg:max-w-6xl lg:grid-cols-3 lg:gap-6 lg:px-8">
         <div>
           <Image src="/medora-mark.png" alt="Medora" width={32} height={32} className="mb-2 h-8 w-8" />
           <p className="mb-1 text-sm font-bold">Medora</p>
@@ -66,7 +66,7 @@ export function Footer() {
           </ul>
         </div>
       </div>
-      <div className="mx-auto max-w-[430px] border-t border-background/15 px-3 py-4 text-center text-[11px] text-background/50 sm:max-w-2xl md:max-w-4xl lg:max-w-6xl lg:px-8">
+      <div className="mx-auto max-w-[430px] border-t border-background/15 px-0 py-4 text-center text-[11px] text-background/50 sm:max-w-2xl md:max-w-4xl lg:max-w-6xl lg:px-8">
         © {new Date().getFullYear()} Medora. All rights reserved.
       </div>
     </footer>

@@ -7,7 +7,7 @@ import { User } from "lucide-react";
 // lands.
 export default function AccountPage() {
   return (
-    <div className="flex flex-col items-center gap-3 px-3 pt-16 text-center">
+    <div className="flex flex-col items-center gap-3 px-0 pt-16 text-center">
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-tint">
         <User className="h-6 w-6 text-primary" strokeWidth={2} />
       </div>

@@ -58,7 +58,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
   }
 
   return (
-    <div className="px-3 pt-4 lg:grid lg:grid-cols-2 lg:gap-10 lg:px-0 lg:pt-0">
+    <div className="pt-4 lg:grid lg:grid-cols-2 lg:gap-10 lg:px-0 lg:pt-0">
       <div className="flex overflow-x-auto rounded-2xl lg:sticky lg:top-28 lg:self-start">
         {product.images.length > 0 ? (
           product.images.map((src) => (

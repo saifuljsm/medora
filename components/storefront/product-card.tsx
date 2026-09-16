@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Pill } from "lucide-react";
+import { AddToCartButton } from "@/components/storefront/add-to-cart-button";
 
 export interface StorefrontProductCard {
   id: string;
@@ -64,6 +65,7 @@ export function ProductCard({ product, wide = false }: { product: StorefrontProd
           {offPercent > 0 && <span className="text-[11px] text-muted-text line-through">৳{product.mrp!.toFixed(2)}</span>}
         </div>
         <span className={`text-[10px] ${stock.className}`}>{stock.text}</span>
+        <AddToCartButton productId={product.id} disabled={product.stock <= 0} />
       </div>
     </Link>
   );

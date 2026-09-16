@@ -32,7 +32,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="px-3 lg:px-0">
+      <section className="lg:px-0">
         <HeroCarousel />
 
         <div className="mb-6">
