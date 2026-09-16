@@ -47,9 +47,9 @@ export default async function HomePage() {
               <Link
                 key={cat.id}
                 href={`/${cat.slug}`}
-                className="flex min-h-11 flex-col items-center gap-[7px] rounded-xl border border-border bg-card p-[12px_6px]"
+                className="group flex min-h-11 flex-col items-center gap-[7px] rounded-xl border border-border bg-card p-[12px_6px] transition-all hover:-translate-y-0.5 hover:border-border-strong hover:shadow-md"
               >
-                <div className="flex h-[42px] w-[42px] items-center justify-center rounded-xl bg-primary-tint text-primary">
+                <div className="flex h-[42px] w-[42px] items-center justify-center rounded-xl bg-primary-tint text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                   <ShieldCheck className="h-[21px] w-[21px]" strokeWidth={1.8} />
                 </div>
                 <span className="text-center text-[11.5px] font-medium leading-tight text-foreground">{cat.name}</span>
@@ -98,7 +98,10 @@ export default async function HomePage() {
         </div>
 
         <div className="mb-6 grid grid-cols-2 gap-2.5 sm:max-w-md lg:max-w-none lg:grid-cols-2">
-          <a href="tel:09642000000" className="flex min-h-11 flex-col gap-2 rounded-xl border border-border bg-card p-[14px_12px]">
+          <a
+            href="tel:09642000000"
+            className="flex min-h-11 flex-col gap-2 rounded-xl border border-border bg-card p-[14px_12px] transition-all hover:-translate-y-0.5 hover:border-border-strong hover:shadow-md"
+          >
             <div className="flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-primary-tint">
               <Phone className="h-4 w-4 text-primary" strokeWidth={2} />
             </div>
@@ -109,7 +112,7 @@ export default async function HomePage() {
             href="https://wa.me/8809642000000"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex min-h-11 flex-col gap-2 rounded-xl border border-border bg-card p-[14px_12px]"
+            className="flex min-h-11 flex-col gap-2 rounded-xl border border-border bg-card p-[14px_12px] transition-all hover:-translate-y-0.5 hover:border-border-strong hover:shadow-md"
           >
             <div className="flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-mint-tint">
               <MessageCircle className="h-4 w-4 text-mint-dark" strokeWidth={2} />
@@ -127,13 +130,13 @@ export default async function HomePage() {
                 See all <ChevronRight className="h-3.5 w-3.5" />
               </Link>
             </div>
-            <div className="-mx-4 flex gap-2.5 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0">
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-[repeat(auto-fit,minmax(150px,190px))]">
               {productIds
                 .map((id) => cardsById.get(id))
                 .filter((c): c is NonNullable<typeof c> => !!c)
                 .slice(0, 6)
                 .map((card) => (
-                  <ProductCard key={card.id} product={card} />
+                  <ProductCard key={card.id} product={card} wide />
                 ))}
             </div>
           </div>

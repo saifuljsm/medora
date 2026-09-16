@@ -31,8 +31,10 @@ export function ProductDetailActions({ productId, options }: { productId: string
             key={opt.unit}
             type="button"
             onClick={() => setSelected(i)}
-            className={`flex min-h-11 flex-1 flex-col justify-center rounded-lg border-[1.5px] px-2.5 py-2.5 text-center text-[13px] font-semibold ${
-              i === selected ? "border-primary bg-primary-tint text-primary" : "border-border text-muted-foreground"
+            className={`flex min-h-11 flex-1 flex-col justify-center rounded-lg border-[1.5px] px-2.5 py-2.5 text-center text-[13px] font-semibold transition-colors ${
+              i === selected
+                ? "border-primary bg-primary-tint text-primary"
+                : "border-border text-muted-foreground hover:border-border-strong hover:bg-accent"
             }`}
           >
             {opt.label}

@@ -21,9 +21,9 @@ export function Accordion({ sections }: { sections: AccordionSection[] }) {
             <button
               type="button"
               onClick={() => setOpenTitle(isOpen ? null : section.title)}
-              className="flex min-h-11 w-full items-center justify-between px-0.5 py-[15px] text-left"
+              className="group flex min-h-11 w-full items-center justify-between px-0.5 py-[15px] text-left"
             >
-              <h4 className="text-sm font-semibold text-foreground">{section.title}</h4>
+              <h4 className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">{section.title}</h4>
               <ChevronDown className={`h-[18px] w-[18px] text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} />
             </button>
             {isOpen && <div className="px-0.5 pb-4 text-[13px] leading-relaxed text-muted-foreground">{section.body}</div>}

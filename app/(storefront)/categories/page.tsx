@@ -17,9 +17,9 @@ export default async function AllCategoriesPage() {
           <Link
             key={cat.id}
             href={`/${cat.slug}`}
-            className="flex min-h-11 flex-col items-center gap-[7px] rounded-xl border border-border bg-card p-[12px_6px]"
+            className="group flex min-h-11 flex-col items-center gap-[7px] rounded-xl border border-border bg-card p-[12px_6px] transition-all hover:-translate-y-0.5 hover:border-border-strong hover:shadow-md"
           >
-            <div className="flex h-[42px] w-[42px] items-center justify-center rounded-xl bg-primary-tint text-primary">
+            <div className="flex h-[42px] w-[42px] items-center justify-center rounded-xl bg-primary-tint text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
               <ShieldCheck className="h-[21px] w-[21px]" strokeWidth={1.8} />
             </div>
             <span className="text-center text-[11.5px] font-medium leading-tight text-foreground">{cat.name}</span>

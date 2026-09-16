@@ -128,17 +128,17 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
           <div className="mt-2.5 flex gap-2">
             <a
               href="tel:09642000000"
-              className="flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-2 text-xs font-semibold"
+              className="flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-2 text-xs font-semibold transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground [&_svg]:hover:text-primary-foreground"
             >
-              <Phone className="h-3.5 w-3.5 text-primary" strokeWidth={2} /> Call pharmacist
+              <Phone className="h-3.5 w-3.5 text-primary transition-colors" strokeWidth={2} /> Call pharmacist
             </a>
             <a
               href="https://wa.me/8809642000000"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-2 text-xs font-semibold"
+              className="flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-2 text-xs font-semibold transition-colors hover:border-mint hover:bg-mint hover:text-white [&_svg]:hover:text-white"
             >
-              <MessageCircle className="h-3.5 w-3.5 text-primary" strokeWidth={2} /> WhatsApp
+              <MessageCircle className="h-3.5 w-3.5 text-primary transition-colors" strokeWidth={2} /> WhatsApp
             </a>
           </div>
         </div>

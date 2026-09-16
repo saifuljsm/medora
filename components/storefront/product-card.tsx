@@ -28,14 +28,18 @@ export function ProductCard({ product, wide = false }: { product: StorefrontProd
   return (
     <Link
       href={href}
-      className={`flex flex-col overflow-hidden rounded-xl border border-border bg-card ${wide ? "" : "w-[142px] shrink-0"}`}
+      className={`group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all hover:-translate-y-0.5 hover:border-border-strong hover:shadow-md ${wide ? "" : "w-[142px] shrink-0"}`}
     >
-      <div className="relative flex aspect-[1/0.85] items-center justify-center bg-primary-tint">
+      <div className="relative flex aspect-[1/0.85] items-center justify-center overflow-hidden bg-gradient-to-br from-primary-tint to-primary-tint-strong">
         {product.images[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={product.images[0]} alt={product.brandName} className="h-full w-full object-cover" />
+          <img
+            src={product.images[0]}
+            alt={product.brandName}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
         ) : (
-          <Pill className="h-[38%] w-[38%] text-primary opacity-85" strokeWidth={1.6} />
+          <Pill className="h-[38%] w-[38%] text-primary opacity-85 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.6} />
         )}
         {offPercent > 0 && (
           <span className="absolute left-[7px] top-[7px] rounded-[5px] bg-success px-[6px] py-[2.5px] text-[10px] font-bold text-white">
@@ -49,7 +53,9 @@ export function ProductCard({ product, wide = false }: { product: StorefrontProd
         )}
       </div>
       <div className="flex flex-1 flex-col gap-[3px] p-[9px_10px_10px]">
-        <div className="line-clamp-2 min-h-8 text-[12.5px] font-semibold leading-[1.3] text-foreground">{product.brandName}</div>
+        <div className="line-clamp-2 min-h-8 text-[12.5px] font-semibold leading-[1.3] text-foreground transition-colors group-hover:text-primary">
+          {product.brandName}
+        </div>
         <div className="text-[10.5px] text-muted-text">{product.genericLabel}</div>
         <div className="mt-0.5 flex items-baseline gap-[5px]">
           <span className="text-[14px] font-bold text-primary">

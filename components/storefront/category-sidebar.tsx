@@ -10,13 +10,13 @@ export function CategorySidebar({ categories }: { categories: Array<{ id: string
         <Link
           key={cat.id}
           href={`/${cat.slug}`}
-          className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent"
+          className="group flex items-center gap-3 px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-accent"
         >
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary-tint text-primary">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary-tint text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
             <ShieldCheck className="h-4 w-4" strokeWidth={1.8} />
           </span>
-          <span className="flex-1">{cat.name}</span>
-          <ChevronRight className="h-4 w-4 text-muted-text" />
+          <span className="flex-1 transition-colors group-hover:text-primary">{cat.name}</span>
+          <ChevronRight className="h-4 w-4 text-muted-text transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
         </Link>
       ))}
     </aside>
