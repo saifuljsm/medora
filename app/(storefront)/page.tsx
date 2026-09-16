@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getOrg } from "@/lib/org";
 import { getStockByProduct, productToCard } from "@/lib/storefront";
 import { ProductCard } from "@/components/storefront/product-card";
+import { HeroCarousel } from "@/components/storefront/hero-carousel";
 
 export const dynamic = "force-dynamic";
 
@@ -32,20 +33,7 @@ export default async function HomePage() {
   return (
     <>
       <section className="px-4 lg:px-0">
-        <div className="mb-6">
-          <div className="-mx-4 flex snap-x gap-2.5 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0">
-            <div className="flex min-h-[118px] w-[88%] shrink-0 snap-start flex-col justify-center gap-1.5 rounded-2xl bg-gradient-to-br from-primary-tint-strong to-primary-tint p-[18px] sm:w-[420px] lg:w-[480px]">
-              <span className="text-[11.5px] font-semibold text-primary">Free delivery</span>
-              <span className="max-w-[80%] text-[17px] font-bold leading-tight text-foreground">Orders above ৳500</span>
-              <span className="text-[12.5px] text-muted-foreground">Nationwide, 24–48 hours</span>
-            </div>
-            <div className="flex min-h-[118px] w-[88%] shrink-0 snap-start flex-col justify-center gap-1.5 rounded-2xl bg-mint-tint p-[18px] sm:w-[420px] lg:w-[480px]">
-              <span className="text-[11.5px] font-semibold text-mint-dark">No time to search</span>
-              <span className="max-w-[80%] text-[17px] font-bold leading-tight text-foreground">Just upload your prescription</span>
-              <span className="text-[12.5px] text-muted-foreground">Our pharmacist takes it from there</span>
-            </div>
-          </div>
-        </div>
+        <HeroCarousel />
 
         <div className="mb-6">
           <div className="mb-3 flex items-center justify-between">

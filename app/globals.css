@@ -3,37 +3,55 @@
 @tailwind utilities;
 
 /*
- * Design tokens lifted directly from reference/medora-prototype.html so the
- * real storefront matches its visual language exactly. Dark mode is class-
- * based (`.dark` on <html>) rather than the prototype's `data-theme`
- * attribute, to match Next.js/shadcn convention.
+ * Medora brand palette (from the logo: Navy = trust/authority, Teal =
+ * healthcare/technology, Green = health/wellness). Replaces the original
+ * prototype's soft-blue/mint placeholder palette from Phase 1.1.
+ *
+ *   --primary        Deep Navy #0B4778   — primary CTAs, nav, brand color
+ *   --primary-dark    Dark Navy #07385F  — primary hover
+ *   --mint            Teal #00AFAF       — secondary CTAs (e.g. Add to
+ *                     cart). Named "mint" for historical reasons (the
+ *                     token predates this palette) — every component
+ *                     using bg-mint/text-mint-dark etc. is intentionally
+ *                     left alone; only the color VALUE changed.
+ *   --mint-dark       Deep Teal #008C9E — secondary hover
+ *   --success         derived from Fresh Green #42D66B, darkened for
+ *                     text/icon contrast on white — in-stock badges,
+ *                     "verified", delivery-completed, discounts.
+ *   --background      White — main page background.
+ *   --primary-tint    Very Light Mint #F4FBF8-based — alternate section
+ *                     backgrounds and icon-chip fills (brand ratio target:
+ *                     ~60% white, ~20% light mint, ~10% navy, ~7% teal,
+ *                     ~3% green — avoid the site reading as "too green").
+ *
+ * Dark mode is class-based (`.dark` on <html>).
  */
 :root {
-  --background: 210 45% 97%; /* #F5F8FC */
-  --foreground: 220 44% 14%; /* #16213A */
+  --background: 0 0% 100%; /* #FFFFFF */
+  --foreground: 202 53% 20%; /* #183B4F */
 
   --card: 0 0% 100%; /* #FFFFFF */
-  --card-foreground: 220 44% 14%;
+  --card-foreground: 202 53% 20%;
 
-  --primary: 221 66% 57%; /* #3E6FDB */
-  --primary-dark: 221 61% 46%; /* #2C55B8 */
+  --primary: 207 83% 26%; /* #0B4778 */
+  --primary-dark: 207 86% 20%; /* #07385F */
   --primary-foreground: 0 0% 100%;
-  --primary-tint: 216 65% 95%; /* #EEF4FD */
-  --primary-tint-strong: 216 66% 91%; /* #DCE9FB */
+  --primary-tint: 154 40% 95%; /* light mint, from #F4FBF8 */
+  --primary-tint-strong: 154 35% 90%;
 
-  --mint: 167 68% 38%; /* #1FA98A */
-  --mint-dark: 168 68% 31%; /* #178370 */
-  --mint-tint: 164 55% 93%; /* #E3F6F1 */
+  --mint: 180 100% 34%; /* #00AFAF Teal */
+  --mint-dark: 187 100% 31%; /* #008C9E Deep Teal */
+  --mint-tint: 180 55% 93%;
 
-  --secondary: 216 65% 95%;
-  --secondary-foreground: 220 44% 14%;
+  --secondary: 207 40% 95%;
+  --secondary-foreground: 202 53% 20%;
 
-  --muted: 216 65% 95%;
-  --muted-foreground: 220 20% 56%; /* #5C6B84 */
-  --text-muted: 219 24% 66%; /* #98A5BC */
+  --muted: 180 20% 95%;
+  --muted-foreground: 204 13% 48%; /* #6B7F8C */
+  --text-muted: 204 15% 65%;
 
-  --accent: 164 55% 93%;
-  --accent-foreground: 168 68% 31%;
+  --accent: 180 50% 94%;
+  --accent-foreground: 187 100% 31%;
 
   --destructive: 5 66% 55%; /* #D94F42 */
   --destructive-foreground: 0 0% 100%;
@@ -42,13 +60,13 @@
   --warning: 35 76% 39%; /* #B97A16 */
   --warning-tint: 39 76% 94%; /* #FCF1DE */
 
-  --success: 167 68% 38%;
-  --success-tint: 164 55% 93%;
+  --success: 137 55% 38%; /* readable text/icon variant of #42D66B */
+  --success-tint: 137 50% 94%;
 
-  --border: 217 46% 92%; /* #E3EAF6 */
-  --border-strong: 213 46% 84%; /* #CBD8ED */
-  --input: 217 46% 92%;
-  --ring: 221 66% 57%;
+  --border: 180 19% 89%; /* #DDE8E8 */
+  --border-strong: 180 19% 78%;
+  --input: 180 19% 89%;
+  --ring: 207 83% 26%;
 
   --radius-lg: 16px;
   --radius-md: 12px;
@@ -57,46 +75,46 @@
 }
 
 .dark {
-  --background: 220 33% 9%; /* #0E1420 */
-  --foreground: 220 44% 94%; /* #EDF1F9 */
+  --background: 202 40% 8%;
+  --foreground: 180 30% 95%;
 
-  --card: 220 30% 14%; /* #161F30 */
-  --card-foreground: 220 44% 94%;
+  --card: 202 35% 13%;
+  --card-foreground: 180 30% 95%;
 
-  --primary: 219 79% 71%; /* #6C97F0 */
-  --primary-dark: 219 78% 78%; /* #8FB0F5 */
-  --primary-foreground: 220 33% 9%;
-  --primary-tint: 219 39% 15%; /* #152238 */
-  --primary-tint-strong: 216 41% 20%; /* #1C2E4A */
+  --primary: 207 70% 60%;
+  --primary-dark: 207 70% 70%;
+  --primary-foreground: 202 40% 8%;
+  --primary-tint: 207 40% 15%;
+  --primary-tint-strong: 207 40% 20%;
 
-  --mint: 165 61% 55%; /* #3FCBAE */
-  --mint-dark: 164 58% 65%; /* #5CDAC0 */
-  --mint-tint: 165 55% 15%; /* #123A32 */
+  --mint: 180 70% 55%;
+  --mint-dark: 187 70% 65%;
+  --mint-tint: 180 40% 15%;
 
-  --secondary: 219 39% 15%;
-  --secondary-foreground: 220 44% 94%;
+  --secondary: 207 30% 15%;
+  --secondary-foreground: 180 30% 95%;
 
-  --muted: 219 39% 15%;
-  --muted-foreground: 217 18% 68%; /* #A9B4C8 */
-  --text-muted: 214 15% 50%; /* #71809A */
+  --muted: 207 30% 15%;
+  --muted-foreground: 204 15% 65%;
+  --text-muted: 204 15% 50%;
 
-  --accent: 165 55% 15%;
-  --accent-foreground: 164 58% 65%;
+  --accent: 180 40% 15%;
+  --accent-foreground: 180 70% 65%;
 
   --destructive: 5 71% 68%; /* #E8776C */
-  --destructive-foreground: 220 33% 9%;
-  --destructive-tint: 4 34% 17%; /* #3A211F */
+  --destructive-foreground: 202 40% 8%;
+  --destructive-tint: 4 34% 17%;
 
   --warning: 37 72% 61%; /* #E3A94C */
-  --warning-tint: 38 48% 15%; /* #3A2E14 */
+  --warning-tint: 38 48% 15%;
 
-  --success: 165 61% 55%;
-  --success-tint: 165 55% 15%;
+  --success: 137 55% 60%;
+  --success-tint: 137 40% 15%;
 
-  --border: 220 30% 21%; /* #26314A */
-  --border-strong: 218 31% 27%; /* #34405C */
-  --input: 220 30% 21%;
-  --ring: 219 79% 71%;
+  --border: 207 25% 20%;
+  --border-strong: 207 25% 28%;
+  --input: 207 25% 20%;
+  --ring: 207 70% 60%;
 }
 
 * {

@@ -81,7 +81,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
           {product.medicine.strength ? ` ${product.medicine.strength}` : ""}
           {product.medicine.manufacturer ? ` · ${product.medicine.manufacturer.name}` : ""}
         </p>
-        <p className={`text-[12.5px] font-semibold ${stock > 0 ? "text-mint-dark" : "text-destructive"}`}>
+        <p className={`text-[12.5px] font-semibold ${stock > 0 ? "text-success" : "text-destructive"}`}>
           {stock > 0 ? "In stock" : "Out of stock"}
         </p>
       </div>
@@ -105,11 +105,11 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
           {/* Reference price/MRP compared like-for-like at the pack level (same
               computation as the product card) — comparing defaultMrp against a
               per-piece price would be an apples-to-oranges "91% off" bug. */}
-          <span className="text-2xl font-bold text-foreground">৳{referencePrice.price.toFixed(2)}</span>
+          <span className="text-2xl font-bold text-primary">৳{referencePrice.price.toFixed(2)}</span>
           {referencePrice.mrp != null && (
             <>
               <span className="text-sm text-muted-text line-through">৳{referencePrice.mrp.toFixed(2)}</span>
-              <span className="rounded-[5px] bg-destructive-tint px-[7px] py-0.5 text-[11.5px] font-bold text-destructive">
+              <span className="rounded-[5px] bg-success-tint px-[7px] py-0.5 text-[11.5px] font-bold text-success">
                 {Math.round(((referencePrice.mrp - referencePrice.price) / referencePrice.mrp) * 100)}% off
               </span>
             </>
