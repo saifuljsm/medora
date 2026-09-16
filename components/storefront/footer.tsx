@@ -4,7 +4,7 @@ import { Phone, MessageCircle } from "lucide-react";
 export function Footer() {
   return (
     <footer className="mt-8 border-t border-border bg-card">
-      <div className="mx-auto grid max-w-[430px] grid-cols-2 gap-8 px-4 py-8 sm:max-w-2xl md:max-w-4xl lg:max-w-none lg:grid-cols-4 lg:px-8 xl:px-12">
+      <div className="mx-auto grid max-w-[430px] grid-cols-2 gap-8 px-4 py-8 sm:max-w-2xl md:max-w-4xl lg:max-w-5xl lg:grid-cols-4 lg:gap-6 lg:px-8">
         <div className="col-span-2 lg:col-span-1">
           <div className="mb-2 flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-[9px] bg-primary">
@@ -75,7 +75,7 @@ export function Footer() {
           </ul>
         </div>
       </div>
-      <div className="mx-auto max-w-[430px] border-t border-border px-4 py-4 text-center text-[11px] text-muted-text sm:max-w-2xl md:max-w-4xl lg:max-w-none lg:px-8 xl:px-12">
+      <div className="mx-auto max-w-[430px] border-t border-border px-4 py-4 text-center text-[11px] text-muted-text sm:max-w-2xl md:max-w-4xl lg:max-w-5xl lg:px-8">
         © {new Date().getFullYear()} Medora, ZAZ Technology. All rights reserved.
       </div>
     </footer>
