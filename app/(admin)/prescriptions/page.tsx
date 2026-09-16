@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { PrescriptionReviewRow } from "@/components/admin/prescription-review-row";
+import { PageHeader } from "@/components/admin/page-header";
 
 export const dynamic = "force-dynamic";
 
@@ -16,13 +17,10 @@ export default async function PrescriptionsPage() {
   });
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-8">
-      <h1 className="text-xl font-bold text-foreground">Prescription review</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Online prescription uploads waiting for approval before checkout can complete.
-      </p>
+    <div className="mx-auto max-w-3xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader title="Prescription review" description="Online prescription uploads waiting for approval before checkout can complete." />
 
-      <div className="mt-5 rounded-xl border border-border bg-card px-4">
+      <div className="rounded-xl border border-border bg-card px-4">
         {pending.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted-foreground">Nothing pending review.</p>
         ) : (

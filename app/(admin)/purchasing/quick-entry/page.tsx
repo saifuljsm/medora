@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { QuickEntryForm } from "@/components/admin/quick-entry-form";
+import { PageHeader } from "@/components/admin/page-header";
 
 export default async function QuickEntryPage() {
   const session = await auth();
@@ -22,8 +23,8 @@ export default async function QuickEntryPage() {
   const products = await prisma.product.findMany({ include: { medicine: true }, orderBy: { brandName: "asc" } });
 
   return (
-    <div className="mx-auto max-w-lg px-6 py-8">
-      <h1 className="mb-6 text-xl font-bold text-foreground">Quick stock entry — {branch.name}</h1>
+    <div className="mx-auto max-w-lg px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader title="Quick stock entry" description={branch.name} />
       <QuickEntryForm
         branchId={branch.id}
         products={products.map((p) => ({ id: p.id, label: `${p.brandName} — ${p.medicine.genericName}` }))}

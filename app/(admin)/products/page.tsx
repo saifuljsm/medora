@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { PageHeader } from "@/components/admin/page-header";
 
 export default async function ProductsPage() {
   const session = await auth();
@@ -27,16 +28,17 @@ export default async function ProductsPage() {
   urgentCutoff.setDate(urgentCutoff.getDate() + 30);
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-8">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-foreground">Products</h1>
-        <div className="flex gap-2">
+    <div className="mx-auto max-w-6xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader
+        title="Products"
+        description={`${products.length} product${products.length === 1 ? "" : "s"} in your catalog`}
+        actions={
           <Button asChild variant="outline">
             <Link href="/products/import">Bulk import</Link>
           </Button>
-        </div>
-      </div>
-      <div className="overflow-x-auto rounded-md border border-border">
+        }
+      />
+      <div className="overflow-x-auto rounded-xl border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow>

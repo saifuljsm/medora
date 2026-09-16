@@ -3,6 +3,7 @@ import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { SupplierForm } from "@/components/admin/supplier-form";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { PageHeader } from "@/components/admin/page-header";
 
 export default async function SuppliersPage() {
   const session = await auth();
@@ -15,10 +16,10 @@ export default async function SuppliersPage() {
   });
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-8">
-      <h1 className="mb-6 text-xl font-bold text-foreground">Suppliers</h1>
+    <div className="mx-auto max-w-4xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader title="Suppliers" />
       <div className="grid gap-6 md:grid-cols-[1fr_320px]">
-        <div className="overflow-x-auto rounded-md border border-border">
+        <div className="overflow-x-auto rounded-xl border border-border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

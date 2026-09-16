@@ -4,6 +4,7 @@ import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/badge";
 import { ReceivePurchaseOrderForm } from "@/components/admin/receive-purchase-order-form";
+import { PageHeader } from "@/components/admin/page-header";
 
 export default async function ReceivePurchaseOrderPage({ params }: { params: { id: string } }) {
   const session = await auth();
@@ -24,16 +25,12 @@ export default async function ReceivePurchaseOrderPage({ params }: { params: { i
   assertCan(session.user, "purchasing:receive", { branchId: order.branchId });
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-8">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-foreground">Receive purchase order</h1>
-          <p className="text-sm text-muted-foreground">
-            {order.supplier.name} · {order.branch.name}
-          </p>
-        </div>
-        <Badge>{order.status}</Badge>
-      </div>
+    <div className="mx-auto max-w-4xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader
+        title="Receive purchase order"
+        description={`${order.supplier.name} · ${order.branch.name}`}
+        actions={<Badge>{order.status}</Badge>}
+      />
 
       <ReceivePurchaseOrderForm
         purchaseOrderId={order.id}

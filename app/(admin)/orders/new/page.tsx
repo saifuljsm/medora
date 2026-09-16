@@ -3,6 +3,7 @@ import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { getOnlineBranchIds } from "@/lib/storefront";
 import { StaffOrderForm } from "@/components/admin/staff-order-form";
+import { PageHeader } from "@/components/admin/page-header";
 
 export const dynamic = "force-dynamic";
 
@@ -18,8 +19,8 @@ export default async function NewStaffOrderPage() {
   const stockByProduct = new Map(stockRows.map((r) => [r.productId, r._sum.quantity ?? 0]));
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-8">
-      <h1 className="mb-6 text-xl font-bold text-foreground">New order (WhatsApp / phone)</h1>
+    <div className="mx-auto max-w-6xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader title="New order" description="For orders taken over WhatsApp or a phone call" />
       <StaffOrderForm
         products={products.map((p) => ({
           id: p.id,

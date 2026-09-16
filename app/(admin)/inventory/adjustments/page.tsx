@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StockAdjustmentForm } from "@/components/admin/stock-adjustment-form";
+import { PageHeader } from "@/components/admin/page-header";
 
 export default async function StockAdjustmentsPage() {
   const session = await auth();
@@ -25,10 +26,10 @@ export default async function StockAdjustmentsPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-8">
-      <h1 className="mb-6 text-xl font-bold text-foreground">Stock adjustments</h1>
+    <div className="mx-auto max-w-5xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader title="Stock adjustments" />
       <div className="grid gap-6 md:grid-cols-[1fr_360px]">
-        <div className="overflow-x-auto rounded-md border border-border">
+        <div className="overflow-x-auto rounded-xl border border-border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

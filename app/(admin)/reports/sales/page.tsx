@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { PageHeader } from "@/components/admin/page-header";
 
 function startOfDay(d: Date) {
   const copy = new Date(d);
@@ -60,13 +61,10 @@ export default async function SalesReportPage({
   ];
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-8">
-      <h1 className="mb-1 text-xl font-bold text-foreground">Sales report</h1>
-      <p className="mb-6 text-sm text-muted-foreground">
-        {from.toLocaleDateString()} – {to.toLocaleDateString()}
-      </p>
+    <div className="mx-auto max-w-4xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader title="Sales report" description={`${from.toLocaleDateString()} – ${to.toLocaleDateString()}`} />
 
-      <form className="mb-6 flex items-end gap-3" method="get">
+      <form className="mb-5 flex items-end gap-3 rounded-xl border border-border bg-card p-4" method="get">
         <div className="flex flex-col gap-1">
           <label className="text-xs text-muted-foreground">From</label>
           <input
@@ -85,12 +83,12 @@ export default async function SalesReportPage({
             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
-        <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+        <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary-dark">
           Apply
         </button>
       </form>
 
-      <div className="overflow-x-auto rounded-md border border-border">
+      <div className="overflow-x-auto rounded-xl border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow>

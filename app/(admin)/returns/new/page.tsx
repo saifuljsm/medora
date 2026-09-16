@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { ReturnForm } from "@/components/admin/return-form";
+import { PageHeader } from "@/components/admin/page-header";
 
 export default async function NewReturnPage() {
   const session = await auth();
@@ -8,8 +9,8 @@ export default async function NewReturnPage() {
   assertCan(session.user, "returns:process");
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-8">
-      <h1 className="mb-6 text-xl font-bold text-foreground">New return</h1>
+    <div className="mx-auto max-w-2xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader title="New return" />
       <ReturnForm />
     </div>
   );

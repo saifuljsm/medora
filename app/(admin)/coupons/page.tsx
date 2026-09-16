@@ -3,6 +3,7 @@ import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { CouponForm } from "@/components/admin/coupon-form";
 import { CouponToggle } from "@/components/admin/coupon-toggle";
+import { PageHeader } from "@/components/admin/page-header";
 
 export const dynamic = "force-dynamic";
 
@@ -13,15 +14,14 @@ export default async function CouponsPage() {
   const coupons = await prisma.coupon.findMany({ where: { orgId: session!.user.orgId }, orderBy: { code: "asc" } });
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-8">
-      <h1 className="text-xl font-bold text-foreground">Coupons</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Applied at online checkout — validated and usage-counted at order time.</p>
+    <div className="mx-auto max-w-2xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader title="Coupons" description="Applied at online checkout — validated and usage-counted at order time." />
 
-      <div className="mt-5">
+      <div className="mb-5">
         <CouponForm />
       </div>
 
-      <div className="mt-5 overflow-hidden rounded-xl border border-border bg-card">
+      <div className="overflow-hidden rounded-xl border border-border bg-card">
         {coupons.length === 0 ? (
           <p className="py-6 text-center text-sm text-muted-foreground">No coupons yet.</p>
         ) : (

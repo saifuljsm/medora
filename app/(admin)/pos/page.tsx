@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { PosTerminal } from "@/components/admin/pos-terminal";
+import { PageHeader } from "@/components/admin/page-header";
 
 export default async function PosPage() {
   const session = await auth();
@@ -38,10 +39,8 @@ export default async function PosPage() {
   const stockByProduct = new Map(stockRows.map((row) => [row.productId, row._sum.quantity ?? 0]));
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-8">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-foreground">POS — {branch.name}</h1>
-      </div>
+    <div className="mx-auto max-w-6xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader title="Point of sale" description={branch.name} />
       <PosTerminal
         branchId={branch.id}
         products={products.map((p) => ({

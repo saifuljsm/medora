@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { PageHeader } from "@/components/admin/page-header";
 
 const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
   DRAFT: "outline",
@@ -26,14 +27,16 @@ export default async function PurchaseOrdersPage() {
   });
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-8">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-foreground">Purchase orders</h1>
-        <Button asChild>
-          <Link href="/purchasing/orders/new">New purchase order</Link>
-        </Button>
-      </div>
-      <div className="overflow-x-auto rounded-md border border-border">
+    <div className="mx-auto max-w-5xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader
+        title="Purchase orders"
+        actions={
+          <Button asChild>
+            <Link href="/purchasing/orders/new">New purchase order</Link>
+          </Button>
+        }
+      />
+      <div className="overflow-x-auto rounded-xl border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow>

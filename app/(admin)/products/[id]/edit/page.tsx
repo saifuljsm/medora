@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { ProductEditForm } from "@/components/admin/product-edit-form";
+import { PageHeader } from "@/components/admin/page-header";
 
 export default async function ProductEditPage({ params }: { params: { id: string } }) {
   const session = await auth();
@@ -13,12 +14,11 @@ export default async function ProductEditPage({ params }: { params: { id: string
   if (!product) notFound();
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-8">
-      <h1 className="mb-1 text-xl font-bold text-foreground">{product.brandName}</h1>
-      <p className="mb-6 text-sm text-muted-foreground">
-        {product.medicine.genericName}
-        {product.medicine.strength ? ` ${product.medicine.strength}` : ""}
-      </p>
+    <div className="mx-auto max-w-3xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader
+        title={product.brandName}
+        description={`${product.medicine.genericName}${product.medicine.strength ? ` ${product.medicine.strength}` : ""}`}
+      />
       <ProductEditForm
         product={{
           id: product.id,

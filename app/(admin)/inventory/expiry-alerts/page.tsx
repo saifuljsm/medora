@@ -3,6 +3,7 @@ import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { PageHeader } from "@/components/admin/page-header";
 
 const WARNING_WINDOW_DAYS = 90;
 const URGENT_WINDOW_DAYS = 30;
@@ -26,12 +27,9 @@ export default async function ExpiryAlertsPage() {
   urgentCutoff.setDate(urgentCutoff.getDate() + URGENT_WINDOW_DAYS);
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-8">
-      <h1 className="mb-1 text-xl font-bold text-foreground">Expiry alerts</h1>
-      <p className="mb-6 text-sm text-muted-foreground">
-        Batches with stock expiring within {WARNING_WINDOW_DAYS} days, soonest first.
-      </p>
-      <div className="overflow-x-auto rounded-md border border-border">
+    <div className="mx-auto max-w-5xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader title="Expiry alerts" description={`Batches with stock expiring within ${WARNING_WINDOW_DAYS} days, soonest first.`} />
+      <div className="overflow-x-auto rounded-xl border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow>

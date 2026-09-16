@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { PurchaseOrderForm } from "@/components/admin/purchase-order-form";
+import { PageHeader } from "@/components/admin/page-header";
 
 export default async function NewPurchaseOrderPage() {
   const session = await auth();
@@ -18,8 +19,8 @@ export default async function NewPurchaseOrderPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-8">
-      <h1 className="mb-6 text-xl font-bold text-foreground">New purchase order</h1>
+    <div className="mx-auto max-w-4xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader title="New purchase order" />
       <PurchaseOrderForm
         suppliers={suppliers.map((s) => ({ id: s.id, name: s.name }))}
         branches={branches.map((b) => ({ id: b.id, name: b.name }))}

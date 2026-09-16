@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { CourierForm } from "@/components/admin/courier-form";
+import { PageHeader } from "@/components/admin/page-header";
 
 export const dynamic = "force-dynamic";
 
@@ -12,15 +13,14 @@ export default async function CouriersPage() {
   const couriers = await prisma.courier.findMany({ orderBy: { name: "asc" } });
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-8">
-      <h1 className="text-xl font-bold text-foreground">Couriers</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Manual dispatch only for now — assign one when you mark an order out for delivery.</p>
+    <div className="mx-auto max-w-2xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader title="Couriers" description="Manual dispatch only for now — assign one when you mark an order out for delivery." />
 
-      <div className="mt-5">
+      <div className="mb-5">
         <CourierForm />
       </div>
 
-      <div className="mt-5 rounded-xl border border-border bg-card px-4">
+      <div className="rounded-xl border border-border bg-card px-4">
         {couriers.length === 0 ? (
           <p className="py-6 text-center text-sm text-muted-foreground">No couriers yet — add one above.</p>
         ) : (

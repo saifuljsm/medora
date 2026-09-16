@@ -2,6 +2,8 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
+import { PageHeader } from "@/components/admin/page-header";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -29,15 +31,18 @@ export default async function OrdersPage() {
   });
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-foreground">Online orders</h1>
-        <Link href="/orders/new" className="rounded-md bg-primary px-3.5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-dark">
-          + New order
-        </Link>
-      </div>
+    <div className="mx-auto max-w-4xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader
+        title="Online orders"
+        description={`${orders.length} order${orders.length === 1 ? "" : "s"}`}
+        actions={
+          <Button asChild>
+            <Link href="/orders/new">+ New order</Link>
+          </Button>
+        }
+      />
 
-      <div className="mt-5 overflow-hidden rounded-xl border border-border bg-card">
+      <div className="overflow-hidden rounded-xl border border-border bg-card">
         {orders.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted-foreground">No online orders yet.</p>
         ) : (

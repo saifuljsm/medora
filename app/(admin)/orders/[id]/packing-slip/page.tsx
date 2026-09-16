@@ -19,7 +19,7 @@ export default async function PackingSlipPage({ params }: { params: { id: string
   const codTxn = order.paymentTransactions.find((t) => t.gateway === "COD");
 
   return (
-    <div className="mx-auto max-w-xl px-6 py-8 print:px-0 print:py-0">
+    <div className="mx-auto max-w-xl px-4 py-6 lg:px-8 lg:py-8 print:px-0 print:py-0">
       <div className="mb-4 flex justify-end print:hidden">
         <PrintButton />
       </div>

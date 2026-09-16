@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { OrderActions } from "@/components/admin/order-actions";
+import { PageHeader } from "@/components/admin/page-header";
 
 export const dynamic = "force-dynamic";
 
@@ -29,17 +30,13 @@ export default async function OrderDetailPage({ params }: { params: { id: string
   if (!order || order.orgId !== session!.user.orgId || order.channel !== "ONLINE") notFound();
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-8">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-foreground">{order.invoiceNumber}</h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            {order.status.replace("_", " ")} · Placed {order.createdAt.toLocaleString("en-BD", { dateStyle: "medium", timeStyle: "short" })}
-          </p>
-        </div>
-      </div>
+    <div className="mx-auto max-w-3xl px-4 py-6 lg:px-8 lg:py-8">
+      <PageHeader
+        title={order.invoiceNumber ?? "Order"}
+        description={`${order.status.replace("_", " ")} · Placed ${order.createdAt.toLocaleString("en-BD", { dateStyle: "medium", timeStyle: "short" })}`}
+      />
 
-      <div className="mt-5 grid gap-5 md:grid-cols-[1.3fr_1fr]">
+      <div className="grid gap-5 md:grid-cols-[1.3fr_1fr]">
         <div className="flex flex-col gap-4">
           <div className="rounded-xl border border-border bg-card p-4">
             <p className="mb-2.5 text-sm font-bold text-foreground">Items</p>
