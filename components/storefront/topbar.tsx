@@ -8,7 +8,7 @@ export function Topbar() {
       <div className="mx-auto w-full max-w-[430px] sm:max-w-2xl md:max-w-4xl lg:max-w-none lg:px-8 xl:px-12">
         <div className="flex items-center justify-between gap-3 px-4 pb-2 pt-3 lg:px-0 lg:py-3.5">
           <Link href="/" className="flex shrink-0 items-center">
-            <Image src="/medora-logo.png" alt="Medora" width={218} height={73} className="h-7 w-auto lg:h-8" priority />
+            <Image src="/medora-logo.png" alt="Medora" width={2251} height={727} className="h-8 w-auto lg:h-10" priority />
           </Link>
 
           {/* Desktop: search bar + nav links inline, no bottom nav (that's mobile-only). */}
