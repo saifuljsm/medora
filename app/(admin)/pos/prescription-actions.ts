@@ -5,10 +5,6 @@ import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
-// TODO(Phase 2.2): imageUrl is a plain text field for now — staff paste a
-// link to a photo they've uploaded elsewhere. Once lib/r2.ts exists this
-// becomes a real presigned upload (camera/gallery), matching the
-// storefront's prescription-order flow.
 const CreateAndApproveSchema = z.object({
   imageUrl: z.string().min(1, "A prescription photo/reference is required"),
   branchId: z.string().min(1),

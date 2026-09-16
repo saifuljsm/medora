@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createPosSale, type CreatePosSaleResult } from "@/app/(admin)/pos/actions";
 import { createAndApprovePrescriptionForPos } from "@/app/(admin)/pos/prescription-actions";
+import { ImageUpload } from "@/components/admin/image-upload";
 
 interface PosProduct {
   id: string;
@@ -281,14 +282,16 @@ export function PosTerminal({ branchId, products }: { branchId: string; products
                   sale can be completed.
                 </p>
                 {prescriptionError && <p className="text-xs text-destructive">{prescriptionError}</p>}
-                <Input
-                  placeholder="Prescription photo link"
-                  value={prescriptionImageUrl}
-                  onChange={(e) => setPrescriptionImageUrl(e.target.value)}
-                />
-                <Button type="button" size="sm" onClick={handleApprovePrescription} disabled={isApprovingPrescription}>
-                  {isApprovingPrescription ? "Approving…" : "Approve & attach"}
-                </Button>
+                {prescriptionImageUrl ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-mint-dark">Photo uploaded.</span>
+                    <Button type="button" size="sm" onClick={handleApprovePrescription} disabled={isApprovingPrescription}>
+                      {isApprovingPrescription ? "Approving…" : "Approve & attach"}
+                    </Button>
+                  </div>
+                ) : (
+                  <ImageUpload purpose="prescription-photo" label="Take/upload photo" onUploaded={(url) => setPrescriptionImageUrl(url)} />
+                )}
               </>
             )}
           </div>
