@@ -15,7 +15,7 @@ export function SearchClient({ products, initialQuery = "" }: { products: Storef
   }, [products, query]);
 
   return (
-    <div className="px-4 pt-4 lg:px-0">
+    <div className="px-3 pt-4 lg:px-0">
       <div className="mb-4 flex items-center gap-2 rounded-xl bg-primary-tint px-3 py-2.5 lg:max-w-xl">
         <SearchIcon className="h-[18px] w-[18px] shrink-0 text-muted-foreground" strokeWidth={2} />
         <Input

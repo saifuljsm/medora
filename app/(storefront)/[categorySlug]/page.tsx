@@ -19,7 +19,7 @@ export default async function CategoryListingPage({ params }: { params: { catego
   const cards = products.map((p) => productToCard(p, stockByProduct.get(p.id) ?? 0));
 
   return (
-    <div className="px-4 pt-4 lg:px-0">
+    <div className="px-3 pt-4 lg:px-0">
       <div className="mb-1">
         <h1 className="mb-0.5 text-base font-bold text-foreground lg:text-2xl">{category.name}</h1>
         <span className="text-xs text-muted-foreground">{cards.length} products</span>

@@ -10,7 +10,7 @@ export default async function AllCategoriesPage() {
   const categories = await prisma.category.findMany({ where: { orgId: org.id, active: true }, orderBy: { name: "asc" } });
 
   return (
-    <div className="px-4 pt-4 lg:px-0">
+    <div className="px-3 pt-4 lg:px-0">
       <h1 className="mb-3 text-base font-bold text-foreground lg:text-2xl">All categories</h1>
       <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
         {categories.map((cat) => (

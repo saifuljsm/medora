@@ -22,7 +22,7 @@ export default async function StorefrontLayout({ children }: { children: React.R
   return (
     <div className="flex min-h-screen flex-col bg-background pb-[72px] lg:pb-0">
       <Topbar products={searchableProducts} />
-      <div className="mx-auto flex w-full max-w-[430px] flex-1 gap-6 pt-[104px] sm:max-w-2xl md:max-w-4xl lg:max-w-none lg:items-start lg:px-8 lg:pt-28 xl:px-12">
+      <div className="mx-auto flex w-full max-w-[430px] flex-1 gap-6 pt-[122px] sm:max-w-2xl md:max-w-4xl lg:max-w-none lg:items-start lg:px-8 lg:pt-28 xl:px-12">
         <CategorySidebar categories={categories} />
         <main className="min-w-0 flex-1">{children}</main>
       </div>
