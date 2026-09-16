@@ -1,8 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Search, User, LayoutGrid, ShoppingCart } from "lucide-react";
 
 export function Topbar() {
+  const pathname = usePathname();
+  const onSearchPage = pathname === "/search";
+
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-border bg-card">
       <div className="mx-auto w-full max-w-[430px] sm:max-w-2xl md:max-w-4xl lg:max-w-none lg:px-8 xl:px-12">
@@ -11,15 +17,19 @@ export function Topbar() {
             <Image src="/medora-logo.png" alt="Medora" width={2251} height={727} className="h-8 w-auto lg:h-10" priority />
           </Link>
 
-          {/* Desktop: search bar + nav links inline, no bottom nav (that's mobile-only). */}
+          {/* Desktop: search bar + nav links inline, no bottom nav (that's mobile-only).
+              Hidden on the search page itself — it has its own live search input, so
+              this link-only bar would just be a second, non-functional search field. */}
           <div className="hidden flex-1 items-center gap-8 lg:flex">
-            <Link href="/search" className="flex max-w-xl flex-1 items-center rounded-xl bg-primary-tint py-1 pl-4 pr-1">
-              <span className="flex-1 text-sm text-muted-text">Search medicine, e.g. Napa</span>
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-mint">
-                <Search className="h-4 w-4 text-white" strokeWidth={2.5} />
-              </span>
-            </Link>
-            <nav className="flex items-center gap-5 text-sm font-medium text-foreground">
+            {!onSearchPage && (
+              <Link href="/search" className="flex max-w-xl flex-1 items-center rounded-xl bg-primary-tint py-1 pl-4 pr-1">
+                <span className="flex-1 text-sm text-muted-text">Search medicine, e.g. Napa</span>
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-mint">
+                  <Search className="h-4 w-4 text-white" strokeWidth={2.5} />
+                </span>
+              </Link>
+            )}
+            <nav className={`flex items-center gap-5 text-sm font-medium text-foreground ${onSearchPage ? "flex-1" : ""}`}>
               <Link href="/categories" className="flex items-center gap-1.5 hover:text-primary">
                 <LayoutGrid className="h-4 w-4" strokeWidth={2} /> Categories
               </Link>
@@ -53,14 +63,16 @@ export function Topbar() {
             </Link>
           </div>
         </div>
-        <div className="px-4 pb-3 lg:hidden">
-          <Link href="/search" className="flex items-center rounded-xl bg-primary-tint py-1 pl-3 pr-1">
-            <span className="flex-1 text-[14.5px] text-muted-text">Search medicine, e.g. Napa</span>
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-mint">
-              <Search className="h-4 w-4 text-white" strokeWidth={2.5} />
-            </span>
-          </Link>
-        </div>
+        {!onSearchPage && (
+          <div className="px-4 pb-3 lg:hidden">
+            <Link href="/search" className="flex items-center rounded-xl bg-primary-tint py-1 pl-3 pr-1">
+              <span className="flex-1 text-[14.5px] text-muted-text">Search medicine, e.g. Napa</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-mint">
+                <Search className="h-4 w-4 text-white" strokeWidth={2.5} />
+              </span>
+            </Link>
+          </div>
+        )}
       </div>
     </header>
   );
