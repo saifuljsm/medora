@@ -8,6 +8,7 @@ const QUICK_LINKS = [
   { href: "/inventory/expiry-alerts", label: "Expiry alerts" },
   { href: "/prescriptions", label: "Prescription review" },
   { href: "/orders", label: "Online orders" },
+  { href: "/couriers", label: "Couriers" },
   { href: "/returns", label: "Returns" },
   { href: "/reconciliation", label: "Cash reconciliation" },
   { href: "/reports/sales", label: "Sales report" },
