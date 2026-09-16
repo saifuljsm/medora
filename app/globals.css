@@ -2,22 +2,112 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Design tokens lifted directly from reference/medora-prototype.html so the
+ * real storefront matches its visual language exactly. Dark mode is class-
+ * based (`.dark` on <html>) rather than the prototype's `data-theme`
+ * attribute, to match Next.js/shadcn convention.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 210 45% 97%; /* #F5F8FC */
+  --foreground: 220 44% 14%; /* #16213A */
+
+  --card: 0 0% 100%; /* #FFFFFF */
+  --card-foreground: 220 44% 14%;
+
+  --primary: 221 66% 57%; /* #3E6FDB */
+  --primary-dark: 221 61% 46%; /* #2C55B8 */
+  --primary-foreground: 0 0% 100%;
+  --primary-tint: 216 65% 95%; /* #EEF4FD */
+  --primary-tint-strong: 216 66% 91%; /* #DCE9FB */
+
+  --mint: 167 68% 38%; /* #1FA98A */
+  --mint-dark: 168 68% 31%; /* #178370 */
+  --mint-tint: 164 55% 93%; /* #E3F6F1 */
+
+  --secondary: 216 65% 95%;
+  --secondary-foreground: 220 44% 14%;
+
+  --muted: 216 65% 95%;
+  --muted-foreground: 220 20% 56%; /* #5C6B84 */
+  --text-muted: 219 24% 66%; /* #98A5BC */
+
+  --accent: 164 55% 93%;
+  --accent-foreground: 168 68% 31%;
+
+  --destructive: 5 66% 55%; /* #D94F42 */
+  --destructive-foreground: 0 0% 100%;
+  --destructive-tint: 5 71% 96%; /* #FBEAE8 */
+
+  --warning: 35 76% 39%; /* #B97A16 */
+  --warning-tint: 39 76% 94%; /* #FCF1DE */
+
+  --success: 167 68% 38%;
+  --success-tint: 164 55% 93%;
+
+  --border: 217 46% 92%; /* #E3EAF6 */
+  --border-strong: 213 46% 84%; /* #CBD8ED */
+  --input: 217 46% 92%;
+  --ring: 221 66% 57%;
+
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --radius: var(--radius-md);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: 220 33% 9%; /* #0E1420 */
+  --foreground: 220 44% 94%; /* #EDF1F9 */
+
+  --card: 220 30% 14%; /* #161F30 */
+  --card-foreground: 220 44% 94%;
+
+  --primary: 219 79% 71%; /* #6C97F0 */
+  --primary-dark: 219 78% 78%; /* #8FB0F5 */
+  --primary-foreground: 220 33% 9%;
+  --primary-tint: 219 39% 15%; /* #152238 */
+  --primary-tint-strong: 216 41% 20%; /* #1C2E4A */
+
+  --mint: 165 61% 55%; /* #3FCBAE */
+  --mint-dark: 164 58% 65%; /* #5CDAC0 */
+  --mint-tint: 165 55% 15%; /* #123A32 */
+
+  --secondary: 219 39% 15%;
+  --secondary-foreground: 220 44% 94%;
+
+  --muted: 219 39% 15%;
+  --muted-foreground: 217 18% 68%; /* #A9B4C8 */
+  --text-muted: 214 15% 50%; /* #71809A */
+
+  --accent: 165 55% 15%;
+  --accent-foreground: 164 58% 65%;
+
+  --destructive: 5 71% 68%; /* #E8776C */
+  --destructive-foreground: 220 33% 9%;
+  --destructive-tint: 4 34% 17%; /* #3A211F */
+
+  --warning: 37 72% 61%; /* #E3A94C */
+  --warning-tint: 38 48% 15%; /* #3A2E14 */
+
+  --success: 165 61% 55%;
+  --success-tint: 165 55% 15%;
+
+  --border: 220 30% 21%; /* #26314A */
+  --border-strong: 218 31% 27%; /* #34405C */
+  --input: 220 30% 21%;
+  --ring: 219 79% 71%;
+}
+
+* {
+  border-color: hsl(var(--border));
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  font-family: var(--font-plus-jakarta-sans), var(--font-noto-sans-bengali), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 @layer utilities {

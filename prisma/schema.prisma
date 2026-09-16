@@ -1,0 +1,662 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Org / Branch / Users
+// ─────────────────────────────────────────────────────────────────
+
+model Org {
+  id               String    @id @default(cuid())
+  name             String
+  customDomain     String?   @unique
+  domainVerifiedAt DateTime?
+  createdAt        DateTime  @default(now())
+
+  branches         Branch[]
+  users            User[]
+  suppliers        Supplier[]
+  customers        Customer[]
+  batches          Batch[]
+  sales            Sale[]
+  purchases        PurchaseOrder[]
+  transfers        StockTransfer[]
+  coupons          Coupon[]
+  categories       Category[]
+  dosageForms      DosageForm[]
+  invoiceCounters  InvoiceCounter[]
+  stockAdjustments StockAdjustment[]
+  cashReconciliations CashReconciliation[]
+}
+
+model Branch {
+  id        String   @id @default(cuid())
+  orgId     String
+  org       Org      @relation(fields: [orgId], references: [id])
+  name      String
+  address   String?
+  phone     String?
+  isOnline  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  users     User[]
+  batches   Batch[]
+  sales     Sale[]
+  purchases PurchaseOrder[]
+
+  transfersFrom StockTransfer[] @relation("TransferFromBranch")
+  transfersTo   StockTransfer[] @relation("TransferToBranch")
+  cashReconciliations CashReconciliation[]
+
+  @@index([orgId])
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  PHARMACIST
+  INVENTORY_MANAGER
+  CASHIER
+}
+
+model User {
+  id                  String    @id @default(cuid())
+  orgId               String
+  org                 Org       @relation(fields: [orgId], references: [id])
+  branchId            String?
+  branch              Branch?   @relation(fields: [branchId], references: [id])
+  name                String
+  email               String
+  phone               String?
+  passwordHash        String
+  pinHash             String?
+  mustChangePassword  Boolean   @default(true)
+  twoFactorSecret     String?
+  twoFactorEnabled    Boolean   @default(false)
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  lastLoginAt         DateTime?
+  roles               Role[]
+  active              Boolean   @default(true)
+  createdAt           DateTime  @default(now())
+
+  reviewedPrescriptions Prescription[] @relation("ReviewedBy")
+  salesCreated          Sale[]         @relation("SaleCashier")
+  stockAdjustments      StockAdjustment[]
+  returnsProcessed      Return[]       @relation("ReturnProcessedBy")
+  returnsApproved       Return[]       @relation("ReturnApprovedBy")
+  cashReconciliations   CashReconciliation[]
+
+  @@unique([orgId, email])
+  @@index([orgId])
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Catalog
+// ─────────────────────────────────────────────────────────────────
+
+model Manufacturer {
+  id      String  @id @default(cuid())
+  name    String  @unique
+  country String?
+
+  medicines Medicine[]
+}
+
+// Admin-managed: which dosage forms can be sold as a smaller unit
+// than the manufacturer's pack (Tablet/Capsule/Vial/Sachet = breakable;
+// Cream/Syrup/Bottle/Inhaler = not). Medicine.form stays free text;
+// admin screens cross-reference it against this table and prompt once
+// when a genuinely new form appears.
+model DosageForm {
+  id         String  @id @default(cuid())
+  orgId      String
+  org        Org     @relation(fields: [orgId], references: [id])
+  name       String  // "Tablet", "Vial", "Suppository", "Cream"...
+  breakable  Boolean @default(false)
+  unitLabel  String? // "Tablet", "Vial", "Sachet" — the piece
+  packLabel  String? // "Strip", "Box", "Tube" — the full pack
+
+  @@unique([orgId, name])
+}
+
+model Medicine {
+  id                   String        @id @default(cuid())
+  genericName          String
+  form                 String
+  strength             String?
+  category             String?       // clinical/therapeutic category — distinct from storefront Category
+  requiresPrescription Boolean       @default(false)
+  manufacturerId       String?
+  manufacturer         Manufacturer? @relation(fields: [manufacturerId], references: [id])
+
+  products Product[]
+
+  @@index([genericName])
+}
+
+model Product {
+  id         String   @id @default(cuid())
+  medicineId String
+  medicine   Medicine @relation(fields: [medicineId], references: [id])
+  brandName  String
+  packSize   String?
+  barcode    String?  @unique
+  defaultMrp Decimal? @db.Decimal(10, 2)
+
+  // Piece / pack selling — only meaningful when the DosageForm is breakable.
+  // Batch.quantity is ALWAYS tracked in base units regardless of these
+  // fields — one stock pool, two ways to sell it.
+  sellsByUnit  Boolean  @default(false)
+  unitLabel    String?  // "Tablet", "Vial"
+  unitPrice    Decimal? @db.Decimal(10, 2)
+  unitsPerPack Int?
+  packLabel    String?  // "Strip", "Box"
+  packPrice    Decimal? @db.Decimal(10, 2)
+
+  // VAT — most medicines are exempt in Bangladesh; FMCG/wellness often aren't.
+  vatRate Decimal? @db.Decimal(5, 2) // percentage, nullable, defaults to 0 in app logic
+
+  // Storefront content
+  slug             String?  @unique
+  shortDescription String?
+  description      String?  @db.Text
+  images           String[]
+  metaTitle        String?
+  metaDescription  String?
+
+  batches       Batch[]
+  saleItems     SaleItem[]
+  purchaseItems PurchaseOrderItem[]
+  categories    Category[]
+  returnItems   ReturnItem[]
+
+  @@index([brandName])
+  @@index([barcode])
+  @@index([slug])
+}
+
+// Storefront browsing taxonomy — separate from Medicine.category (clinical).
+// Many-to-many with Product: a product can sit in several categories
+// (e.g. "OTC Medicine" AND "Exclusive Deals").
+model Category {
+  id       String    @id @default(cuid())
+  orgId    String
+  org      Org       @relation(fields: [orgId], references: [id])
+  name     String
+  slug     String    @unique
+  active   Boolean   @default(true)
+  products Product[]
+
+  @@unique([orgId, name])
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Inventory
+// ─────────────────────────────────────────────────────────────────
+
+enum BatchSource {
+  PURCHASE_ORDER
+  QUICK_ENTRY
+}
+
+model Batch {
+  id            String      @id @default(cuid())
+  orgId         String
+  org           Org         @relation(fields: [orgId], references: [id])
+  branchId      String
+  branch        Branch      @relation(fields: [branchId], references: [id])
+  productId     String
+  product       Product     @relation(fields: [productId], references: [id])
+  batchNumber   String
+  expiryDate    DateTime
+  quantity      Int         // ALWAYS base units — tablets, vials, never strips/boxes
+  purchasePrice Decimal     @db.Decimal(10, 2) // per base unit
+  sellingPrice  Decimal     @db.Decimal(10, 2) // per base unit (legacy; piece/pack pricing lives on Product)
+  source        BatchSource @default(PURCHASE_ORDER)
+  createdAt     DateTime    @default(now())
+
+  saleItems         SaleItem[]
+  purchaseItems     PurchaseOrderItem[]
+  transferItems     StockTransferItem[]
+  stockAdjustments  StockAdjustment[]
+  returnItems       ReturnItem[]
+
+  @@index([orgId, branchId])
+  @@index([productId])
+  @@index([expiryDate])
+}
+
+model Supplier {
+  id      String  @id @default(cuid())
+  orgId   String
+  org     Org     @relation(fields: [orgId], references: [id])
+  name    String
+  phone   String?
+  address String?
+
+  purchaseOrders PurchaseOrder[]
+
+  @@index([orgId])
+}
+
+enum PurchaseStatus {
+  DRAFT
+  ORDERED
+  RECEIVED
+  PARTIALLY_RECEIVED
+  CANCELED
+}
+
+model PurchaseOrder {
+  id         String         @id @default(cuid())
+  orgId      String
+  org        Org            @relation(fields: [orgId], references: [id])
+  branchId   String
+  branch     Branch         @relation(fields: [branchId], references: [id])
+  supplierId String
+  supplier   Supplier       @relation(fields: [supplierId], references: [id])
+  status     PurchaseStatus @default(DRAFT)
+  orderedAt  DateTime       @default(now())
+  receivedAt DateTime?
+
+  items PurchaseOrderItem[]
+
+  @@index([orgId, branchId])
+}
+
+enum PurchaseUnit {
+  PIECE
+  PACK
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  productId       String
+  product         Product       @relation(fields: [productId], references: [id])
+  batchId         String?
+  batch           Batch?        @relation(fields: [batchId], references: [id])
+  unit            PurchaseUnit  @default(PACK) // meaning of `quantity` depends on this
+  quantity        Int
+  unitCost        Decimal       @db.Decimal(10, 2) // cost per `unit` as ordered
+
+  @@index([purchaseOrderId])
+}
+
+model StockTransfer {
+  id           String   @id @default(cuid())
+  orgId        String
+  org          Org      @relation(fields: [orgId], references: [id])
+  fromBranchId String
+  fromBranch   Branch   @relation("TransferFromBranch", fields: [fromBranchId], references: [id])
+  toBranchId   String
+  toBranch     Branch   @relation("TransferToBranch", fields: [toBranchId], references: [id])
+  createdAt    DateTime @default(now())
+
+  items StockTransferItem[]
+
+  @@index([orgId])
+}
+
+model StockTransferItem {
+  id              String        @id @default(cuid())
+  stockTransferId String
+  stockTransfer   StockTransfer @relation(fields: [stockTransferId], references: [id])
+  batchId         String
+  batch           Batch         @relation(fields: [batchId], references: [id])
+  quantity        Int
+}
+
+// Reason-coded write-off/correction to Batch.quantity — damaged,
+// expired, lost, theft. INVENTORY_MANAGER/ADMIN/OWNER only — never
+// CASHIER (opposite trust direction from Quick Stock Entry).
+enum StockAdjustmentReason {
+  DAMAGED
+  EXPIRED
+  LOST
+  THEFT
+  OTHER
+}
+
+model StockAdjustment {
+  id            String                 @id @default(cuid())
+  orgId         String
+  org           Org                    @relation(fields: [orgId], references: [id])
+  batchId       String
+  batch         Batch                  @relation(fields: [batchId], references: [id])
+  quantity      Int                    // negative delta
+  reason        StockAdjustmentReason
+  note          String?
+  adjustedById  String
+  adjustedBy    User                   @relation(fields: [adjustedById], references: [id])
+  createdAt     DateTime               @default(now())
+
+  @@index([orgId, batchId])
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Customers, Sales, e-commerce
+// ─────────────────────────────────────────────────────────────────
+
+model Customer {
+  id              String    @id @default(cuid())
+  orgId           String
+  org             Org       @relation(fields: [orgId], references: [id])
+  name            String?
+  phone           String?
+  passwordHash    String?   // null for guest, staff-created bare records, or social-only accounts
+  phoneVerifiedAt DateTime?
+  email           String?
+  oauthProvider   String?
+  oauthProviderId String?
+  address         String?
+  createdAt       DateTime  @default(now())
+
+  sales         Sale[]
+  prescriptions Prescription[]
+  addresses     Address[]
+
+  @@unique([orgId, phone])
+  @@unique([orgId, email])
+  @@unique([oauthProvider, oauthProviderId])
+}
+
+// Structured Division → District → Upazila, decided over free text.
+model Address {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  label      String?
+  division   String
+  district   String
+  upazila    String
+  line1      String
+  line2      String?
+  postCode   String?
+  phone      String?
+  latitude   Float?
+  longitude  Float?
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  sales Sale[]
+
+  @@index([customerId])
+}
+
+enum SaleChannel {
+  POS
+  ONLINE
+}
+
+enum PaymentMethod {
+  CASH
+  COD
+  CARD
+  MOBILE_BANKING
+  ONLINE_GATEWAY
+  DUE
+}
+
+// Decided flow, matching the MedEasy reference — replaces the simpler
+// PROCESSING → SHIPPED jump with the finer packaging/delivering split.
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  CONFIRMED
+  PACKAGING
+  PACKAGED
+  DELIVERING
+  DELIVERED
+  COMPLETED
+  CANCELED
+  RETURNED
+}
+
+enum OrderSource {
+  WEBSITE
+  WHATSAPP
+  PHONE_CALL
+  STAFF_ASSISTED
+}
+
+model Sale {
+  id                String        @id @default(cuid())
+  orgId             String
+  org               Org           @relation(fields: [orgId], references: [id])
+  branchId          String
+  branch            Branch        @relation(fields: [branchId], references: [id])
+  customerId        String?
+  customer          Customer?     @relation(fields: [customerId], references: [id])
+  cashierId         String
+  cashier           User          @relation("SaleCashier", fields: [cashierId], references: [id])
+  channel           SaleChannel   @default(POS)
+  status            OrderStatus   @default(COMPLETED)
+  paymentMethod     PaymentMethod
+  orderSource       OrderSource?  // null for POS; set for ONLINE
+  shippingAddressId String?
+  shippingAddress   Address?      @relation(fields: [shippingAddressId], references: [id])
+  couponId          String?
+  coupon            Coupon?       @relation(fields: [couponId], references: [id])
+  invoiceNumber     String?       @unique // POS-2026-000123 / ECOM-2026-000045, from InvoiceCounter
+  subtotal          Decimal       @db.Decimal(10, 2)
+  discount          Decimal       @default(0) @db.Decimal(10, 2)
+  taxAmount         Decimal       @default(0) @db.Decimal(10, 2) // sum of taxable line items, not a flat order rate
+  deliveryFee       Decimal       @default(0) @db.Decimal(10, 2)
+  total             Decimal       @db.Decimal(10, 2)
+  createdAt         DateTime      @default(now())
+
+  items               SaleItem[]
+  prescriptions       Prescription[]
+  paymentTransactions PaymentTransaction[]
+  delivery            Delivery?
+  returns             Return[]
+
+  @@index([orgId, branchId, createdAt])
+  @@index([orgId, status])
+}
+
+model SaleItem {
+  id        String  @id @default(cuid())
+  saleId    String
+  sale      Sale    @relation(fields: [saleId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  batchId   String
+  batch     Batch   @relation(fields: [batchId], references: [id])
+  quantity  Int     // base units
+  unitPrice Decimal @db.Decimal(10, 2)
+
+  returnItems ReturnItem[]
+
+  @@index([saleId])
+}
+
+enum PaymentTxnStatus {
+  INITIATED
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+model PaymentTransaction {
+  id           String           @id @default(cuid())
+  saleId       String
+  sale         Sale             @relation(fields: [saleId], references: [id])
+  gateway      String
+  gatewayTxnId String?
+  amount       Decimal          @db.Decimal(10, 2) // staff-entered at packing-slip generation for COD, not silently pulled from Sale.total
+  status       PaymentTxnStatus @default(INITIATED)
+  rawResponse  Json?
+  createdAt    DateTime         @default(now())
+
+  @@index([saleId])
+  @@index([gatewayTxnId])
+}
+
+model Courier {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  isApiIntegrated Boolean  @default(false) // false for V1 — manual courier, API layered on later
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+
+  deliveries Delivery[]
+}
+
+enum DeliveryStatus {
+  PENDING
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  FAILED
+  RETURNED
+}
+
+model Delivery {
+  id         String         @id @default(cuid())
+  saleId     String         @unique
+  sale       Sale           @relation(fields: [saleId], references: [id])
+  courierId  String
+  courier    Courier        @relation(fields: [courierId], references: [id])
+  trackingId String?
+  fee        Decimal        @default(0) @db.Decimal(10, 2)
+  status     DeliveryStatus @default(PENDING)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@index([saleId])
+  @@index([courierId])
+  @@index([trackingId])
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+model Coupon {
+  id             String       @id @default(cuid())
+  orgId          String
+  org            Org          @relation(fields: [orgId], references: [id])
+  code           String
+  discountType   DiscountType
+  value          Decimal      @db.Decimal(10, 2)
+  minOrderAmount Decimal?     @db.Decimal(10, 2)
+  usageLimit     Int?
+  timesUsed      Int          @default(0)
+  expiresAt      DateTime?
+  active         Boolean      @default(true)
+
+  sales Sale[]
+
+  @@unique([orgId, code])
+  @@index([orgId])
+}
+
+enum PrescriptionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Prescription {
+  id           String             @id @default(cuid())
+  orgId        String
+  saleId       String?            // nullable — standalone prescription-first uploads have no Sale yet
+  sale         Sale?              @relation(fields: [saleId], references: [id])
+  customerId   String?
+  customer     Customer?          @relation(fields: [customerId], references: [id])
+  imageUrl     String
+  status       PrescriptionStatus @default(PENDING)
+  reviewedById String?
+  reviewedBy   User?              @relation("ReviewedBy", fields: [reviewedById], references: [id])
+  reviewedAt   DateTime?
+  createdAt    DateTime           @default(now())
+
+  @@index([orgId, status])
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Returns, Invoicing, Reconciliation
+// ─────────────────────────────────────────────────────────────────
+
+enum RefundMethod {
+  CASH
+  MOBILE_BANKING
+  STORE_CREDIT
+}
+
+// CASHIER handles every return directly, regardless of whether the
+// item required a prescription — the prescription gate applies only
+// on the sale side, never mirrored onto returns.
+model Return {
+  id             String       @id @default(cuid())
+  saleId         String
+  sale           Sale         @relation(fields: [saleId], references: [id])
+  reason         String
+  refundMethod   RefundMethod
+  refundAmount   Decimal      @db.Decimal(10, 2)
+  processedById  String
+  processedBy    User         @relation("ReturnProcessedBy", fields: [processedById], references: [id])
+  approvedById   String?      // unused by current rules, kept for future policy changes
+  approvedBy     User?        @relation("ReturnApprovedBy", fields: [approvedById], references: [id])
+  createdAt      DateTime     @default(now())
+
+  items ReturnItem[]
+}
+
+model ReturnItem {
+  id           String   @id @default(cuid())
+  returnId     String
+  return       Return   @relation(fields: [returnId], references: [id])
+  saleItemId   String
+  saleItem     SaleItem @relation(fields: [saleItemId], references: [id])
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id])
+  batchId      String?  // set when restock = true
+  batch        Batch?   @relation(fields: [batchId], references: [id])
+  quantity     Int
+  restock      Boolean  // true = back to Batch.quantity; false = routes to a StockAdjustment write-off
+}
+
+// Per-org, per-channel, per-year running number. Incremented inside
+// the same transaction as the Sale write, row-locked like
+// Batch.quantity, so two simultaneous checkouts never collide.
+model InvoiceCounter {
+  id         String      @id @default(cuid())
+  orgId      String
+  org        Org         @relation(fields: [orgId], references: [id])
+  channel    SaleChannel
+  year       Int
+  lastNumber Int         @default(0)
+
+  @@unique([orgId, channel, year])
+}
+
+// Per branch, per day till count vs. expected cash from CASH sales.
+model CashReconciliation {
+  id             String   @id @default(cuid())
+  orgId          String
+  org            Org      @relation(fields: [orgId], references: [id])
+  branchId       String
+  branch         Branch   @relation(fields: [branchId], references: [id])
+  date           DateTime @db.Date
+  openingFloat   Decimal  @db.Decimal(10, 2)
+  expectedCash   Decimal  @db.Decimal(10, 2) // computed from that day's PaymentMethod.CASH sales
+  countedCash    Decimal  @db.Decimal(10, 2) // staff entry at close
+  variance       Decimal  @db.Decimal(10, 2) // countedCash - expectedCash
+  reconciledById String
+  reconciledBy   User     @relation(fields: [reconciledById], references: [id])
+  notes          String?
+  createdAt      DateTime @default(now())
+
+  @@unique([orgId, branchId, date])
+}

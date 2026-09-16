@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Medora — Order medicine online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#3E6FDB;
+    --primary-dark:#2C55B8;
+    --primary-tint:#EEF4FD;
+    --primary-tint-strong:#DCE9FB;
+    --mint:#1FA98A;
+    --mint-dark:#178370;
+    --mint-tint:#E3F6F1;
+    --bg:#F5F8FC;
+    --card:#FFFFFF;
+    --text-primary:#16213A;
+    --text-secondary:#5C6B84;
+    --text-muted:#98A5BC;
+    --border:#E3EAF6;
+    --border-strong:#CBD8ED;
+    --danger:#D94F42;
+    --danger-tint:#FBEAE8;
+    --warning:#B97A16;
+    --warning-tint:#FCF1DE;
+    --success:#1FA98A;
+    --success-tint:#E3F6F1;
+    --radius-lg:16px;
+    --radius-md:12px;
+    --radius-sm:8px;
+    --shadow-card:0 1px 2px rgba(22,33,58,0.04);
+    --font:'Plus Jakarta Sans','Noto Sans Bengali',system-ui,sans-serif;
+  }
+  [data-theme="dark"]{
+    --primary:#6C97F0;
+    --primary-dark:#8FB0F5;
+    --primary-tint:#152238;
+    --primary-tint-strong:#1C2E4A;
+    --mint:#3FCBAE;
+    --mint-dark:#5CDAC0;
+    --mint-tint:#123A32;
+    --bg:#0E1420;
+    --card:#161F30;
+    --text-primary:#EDF1F9;
+    --text-secondary:#A9B4C8;
+    --text-muted:#71809A;
+    --border:#26314A;
+    --border-strong:#34405C;
+    --danger:#E8776C;
+    --danger-tint:#3A211F;
+    --warning:#E3A94C;
+    --warning-tint:#3A2E14;
+    --success:#3FCBAE;
+    --success-tint:#123A32;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --primary:#6C97F0;--primary-dark:#8FB0F5;--primary-tint:#152238;--primary-tint-strong:#1C2E4A;
+      --mint:#3FCBAE;--mint-dark:#5CDAC0;--mint-tint:#123A32;
+      --bg:#0E1420;--card:#161F30;
+      --text-primary:#EDF1F9;--text-secondary:#A9B4C8;--text-muted:#71809A;
+      --border:#26314A;--border-strong:#34405C;
+      --danger:#E8776C;--danger-tint:#3A211F;
+      --warning:#E3A94C;--warning-tint:#3A2E14;
+      --success:#3FCBAE;--success-tint:#123A32;
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text-primary);font-family:var(--font);}
+  body{-webkit-font-smoothing:antialiased;overscroll-behavior-y:contain;}
+  button,input,select{font-family:inherit;}
+  .app{max-width:430px;margin:0 auto;background:var(--bg);min-height:100vh;position:relative;padding-top:104px;padding-bottom:72px;}
+  img{max-width:100%;display:block;}
+
+  /* ---------- header ---------- */
+  .topbar{position:fixed;top:0;left:0;right:0;max-width:430px;margin:0 auto;background:var(--card);border-bottom:0.5px solid var(--border);z-index:40;}
+  .topbar-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 8px;}
+  .logo{display:flex;align-items:center;gap:8px;}
+  .logo-mark{width:32px;height:32px;border-radius:9px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .logo-mark svg{width:18px;height:18px;}
+  .logo-text{font-weight:700;font-size:18px;letter-spacing:-0.02em;color:var(--text-primary);}
+  .logo-sub{font-size:10.5px;color:var(--text-muted);margin-top:-2px;}
+  .icon-btn{width:38px;height:38px;border-radius:50%;border:0.5px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;position:relative;}
+  .icon-btn svg{width:19px;height:19px;stroke:var(--text-primary);}
+  .lang-toggle{display:flex;border:0.5px solid var(--border);border-radius:999px;overflow:hidden;font-size:11px;font-weight:600;}
+  .lang-toggle button{border:none;background:var(--card);color:var(--text-muted);padding:6px 9px;cursor:pointer;}
+  .lang-toggle button.active{background:var(--primary);color:#fff;}
+  .search-row{padding:0 16px 12px;}
+  .search-field{display:flex;align-items:center;gap:8px;background:var(--primary-tint);border-radius:var(--radius-md);padding:10px 12px;border:0.5px solid transparent;}
+  .search-field svg{width:18px;height:18px;stroke:var(--text-secondary);flex-shrink:0;}
+  .search-field input{border:none;background:transparent;outline:none;font-size:14.5px;color:var(--text-primary);width:100%;}
+  .search-field input::placeholder{color:var(--text-muted);}
+
+  /* ---------- bottom nav ---------- */
+  .bottomnav{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;background:var(--card);border-top:0.5px solid var(--border);display:flex;z-index:40;padding-bottom:env(safe-area-inset-bottom);}
+  .navitem{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 0 8px;background:none;border:none;cursor:pointer;color:var(--text-muted);min-height:44px;position:relative;}
+  .navitem svg{width:22px;height:22px;stroke:currentColor;}
+  .navitem span{font-size:10.5px;font-weight:500;}
+  .navitem.active{color:var(--primary);}
+  .navbadge{position:absolute;top:2px;right:calc(50% - 20px);background:var(--mint);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
+
+  /* ---------- screens ---------- */
+  .screen{display:none;padding:16px;animation:fadein .18s ease;}
+  .screen.active{display:block;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+  .overlay-screen{position:fixed;inset:0;max-width:430px;margin:0 auto;background:var(--bg);z-index:60;display:none;overflow-y:auto;}
+  .overlay-screen.active{display:block;}
+  .overlay-header{position:sticky;top:0;background:var(--card);border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:12px;padding:14px 16px;z-index:5;}
+  .overlay-header h2{font-size:16px;font-weight:600;margin:0;flex:1;}
+  .back-btn{width:36px;height:36px;border-radius:50%;border:0.5px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+  .back-btn svg{width:18px;height:18px;stroke:var(--text-primary);}
+
+  /* ---------- section heading ---------- */
+  .section{margin-bottom:24px;}
+  .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .section-head h2{font-size:16px;font-weight:600;margin:0;}
+  .link-more{font-size:13px;color:var(--primary);font-weight:600;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:2px;}
+  .link-more svg{width:14px;height:14px;stroke:var(--primary);}
+
+  /* ---------- hero carousel ---------- */
+  .hero-scroll{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;margin:0 -16px 10px;padding-left:16px;padding-right:16px;}
+  .hero-scroll::-webkit-scrollbar{display:none;}
+  .hero-card{scroll-snap-align:start;flex:0 0 88%;border-radius:var(--radius-lg);padding:18px;min-height:118px;display:flex;flex-direction:column;justify-content:center;gap:6px;position:relative;overflow:hidden;}
+  .hero-1{background:linear-gradient(135deg,var(--primary-tint-strong),var(--primary-tint));}
+  .hero-2{background:var(--mint-tint);}
+  .hero-3{background:var(--primary-tint);}
+  .hero-eyebrow{font-size:11.5px;font-weight:600;color:var(--primary);}
+  .hero-2 .hero-eyebrow{color:var(--mint-dark);}
+  .hero-title{font-size:17px;font-weight:700;line-height:1.25;color:var(--text-primary);max-width:80%;}
+  .hero-sub{font-size:12.5px;color:var(--text-secondary);}
+  .hero-icon{position:absolute;right:14px;bottom:14px;width:46px;height:46px;opacity:.9;}
+  .dots{display:flex;gap:5px;justify-content:center;margin-top:2px;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--border-strong);}
+  .dot.active{background:var(--primary);width:16px;border-radius:4px;}
+
+  /* ---------- category grid ---------- */
+  .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .cat-item{display:flex;flex-direction:column;align-items:center;gap:7px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:12px 6px;cursor:pointer;min-height:44px;}
+  .cat-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;}
+  .cat-icon svg{width:21px;height:21px;}
+  .cat-item span{font-size:11.5px;font-weight:500;text-align:center;line-height:1.25;color:var(--text-primary);}
+
+  /* ---------- rx upload card ---------- */
+  .rx-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px;}
+  .rx-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
+  .rx-icon-wrap{width:46px;height:46px;border-radius:13px;background:var(--primary-tint);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .rx-icon-wrap svg{width:23px;height:23px;stroke:var(--primary);}
+  .rx-head h3{font-size:15.5px;font-weight:700;margin:0 0 3px;}
+  .rx-head p{font-size:12.5px;color:var(--text-secondary);margin:0;line-height:1.4;}
+  .rx-steps{display:flex;justify-content:space-between;margin:14px 0 16px;position:relative;}
+  .rx-steps::before{content:'';position:absolute;top:13px;left:24px;right:24px;height:1.5px;background:var(--border);z-index:0;}
+  .rx-step{display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;z-index:1;flex:1;}
+  .rx-step-dot{width:26px;height:26px;border-radius:50%;background:var(--bg);border:1.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-muted);}
+  .rx-step span{font-size:9.5px;color:var(--text-muted);text-align:center;max-width:52px;}
+  .btn-mint{background:var(--mint);color:#fff;border:none;border-radius:var(--radius-md);padding:13px;font-size:14.5px;font-weight:600;width:100%;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;}
+  .btn-mint svg{width:17px;height:17px;stroke:#fff;}
+  .btn-outline{background:var(--card);color:var(--text-primary);border:0.5px solid var(--border-strong);border-radius:var(--radius-md);padding:12px;font-size:13.5px;font-weight:600;width:100%;cursor:pointer;min-height:44px;}
+  .btn-primary{background:var(--primary);color:#fff;border:none;border-radius:var(--radius-md);padding:13px;font-size:14.5px;font-weight:600;width:100%;cursor:pointer;min-height:44px;}
+
+  /* ---------- support cards ---------- */
+  .support-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .support-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:14px 12px;display:flex;flex-direction:column;gap:8px;cursor:pointer;min-height:44px;}
+  .support-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+  .support-card p{margin:0;font-size:12.5px;font-weight:600;color:var(--text-primary);}
+  .support-card span{font-size:11px;color:var(--text-secondary);}
+
+  /* ---------- product carousel / cards ---------- */
+  .prod-scroll{display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:0 16px 4px;}
+  .prod-scroll::-webkit-scrollbar{display:none;}
+  .prod-card{flex:0 0 142px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-md);overflow:hidden;cursor:pointer;display:flex;flex-direction:column;}
+  .prod-card.grid-card{flex:none;width:auto;}
+  .prod-img{aspect-ratio:1/0.85;background:var(--primary-tint);display:flex;align-items:center;justify-content:center;position:relative;}
+  .prod-img svg{width:38%;height:38%;stroke:var(--primary);opacity:.85;}
+  .badge{position:absolute;top:7px;left:7px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;padding:2.5px 6px;border-radius:5px;}
+  .rx-badge{position:absolute;top:7px;right:7px;background:var(--warning-tint);color:var(--warning);font-size:9px;font-weight:700;padding:2.5px 5px;border-radius:5px;border:0.5px solid var(--warning);}
+  .prod-info{padding:9px 10px 10px;display:flex;flex-direction:column;gap:3px;flex:1;}
+  .prod-name{font-size:12.5px;font-weight:600;color:var(--text-primary);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:32px;}
+  .prod-meta{font-size:10.5px;color:var(--text-muted);}
+  .prod-price-row{display:flex;align-items:baseline;gap:5px;margin-top:2px;}
+  .price-now{font-size:14px;font-weight:700;color:var(--text-primary);}
+  .price-mrp{font-size:11px;color:var(--text-muted);text-decoration:line-through;}
+  .price-off{font-size:10.5px;color:var(--mint-dark);font-weight:600;}
+  .stock-line{font-size:10px;margin-top:1px;}
+  .stock-in{color:var(--mint-dark);}
+  .stock-low{color:var(--warning);}
+  .stock-out{color:var(--danger);}
+  .add-row{margin-top:8px;}
+  .btn-add{width:100%;background:var(--mint-tint);color:var(--mint-dark);border:1px solid var(--mint);border-radius:var(--radius-sm);padding:7px;font-size:12.5px;font-weight:700;cursor:pointer;min-height:32px;}
+  .btn-add.disabled{background:var(--border);color:var(--text-muted);border-color:var(--border);cursor:not-allowed;}
+  .qty-stepper{display:flex;align-items:center;justify-content:space-between;background:var(--mint);border-radius:var(--radius-sm);overflow:hidden;min-height:32px;}
+  .qty-stepper button{background:none;border:none;color:#fff;width:30px;height:32px;font-size:16px;cursor:pointer;font-weight:700;}
+  .qty-stepper span{color:#fff;font-size:13px;font-weight:700;}
+
+  /* ---------- trust section ---------- */
+  .trust-wrap{background:var(--primary-tint);border-radius:var(--radius-lg);padding:18px 16px;}
+  .trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .trust-item{display:flex;gap:9px;align-items:flex-start;}
+  .trust-item svg{width:19px;height:19px;stroke:var(--primary);flex-shrink:0;margin-top:1px;}
+  .trust-item p{margin:0;font-size:12px;font-weight:600;color:var(--text-primary);line-height:1.3;}
+  .trust-item span{font-size:10.5px;color:var(--text-secondary);}
+
+  /* ---------- search screen ---------- */
+  .chip-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{background:var(--card);border:0.5px solid var(--border);border-radius:999px;padding:7px 12px;font-size:12.5px;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:5px;min-height:32px;}
+  .search-result{display:flex;gap:12px;align-items:center;padding:11px 0;border-bottom:0.5px solid var(--border);cursor:pointer;}
+  .sr-thumb{width:42px;height:42px;border-radius:10px;background:var(--primary-tint);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .sr-thumb svg{width:20px;height:20px;stroke:var(--primary);}
+  .sr-text p{margin:0;font-size:13.5px;font-weight:600;}
+  .sr-text span{font-size:11.5px;color:var(--text-muted);}
+  .state-label{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.02em;margin:20px 0 8px;text-transform:none;}
+  .skeleton{background:linear-gradient(90deg,var(--border) 25%,var(--primary-tint) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--radius-sm);}
+  @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+  .empty-state{text-align:center;padding:28px 16px;}
+  .empty-state svg{width:52px;height:52px;stroke:var(--text-muted);margin-bottom:10px;}
+  .empty-state p{font-weight:600;font-size:14px;margin:0 0 4px;}
+  .empty-state span{font-size:12.5px;color:var(--text-secondary);}
+
+  /* ---------- listing ---------- */
+  .listing-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+  .listing-head h2{font-size:16px;font-weight:700;margin:0 0 2px;}
+  .listing-head span{font-size:12px;color:var(--text-secondary);}
+  .filter-sort-row{display:flex;gap:8px;margin:12px 0 14px;}
+  .fs-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:9px;font-size:12.5px;font-weight:600;cursor:pointer;min-height:38px;}
+  .fs-btn svg{width:15px;height:15px;stroke:var(--text-primary);}
+  .prod-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+  /* ---------- sheet (filter/sort) ---------- */
+  .sheet-backdrop{position:fixed;inset:0;max-width:430px;margin:0 auto;background:rgba(15,22,38,.42);z-index:70;display:none;align-items:flex-end;}
+  .sheet-backdrop.active{display:flex;}
+  .sheet{background:var(--card);border-radius:18px 18px 0 0;width:100%;max-height:80vh;overflow-y:auto;padding:8px 18px 20px;}
+  .sheet-handle{width:36px;height:4px;background:var(--border-strong);border-radius:2px;margin:8px auto 14px;}
+  .sheet-title{font-size:16px;font-weight:700;margin:0 0 14px;}
+  .sheet-group{margin-bottom:18px;}
+  .sheet-group h4{font-size:12.5px;font-weight:700;color:var(--text-secondary);margin:0 0 10px;text-transform:none;}
+  .opt-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:0.5px solid var(--border);min-height:44px;}
+  .opt-row:last-child{border-bottom:none;}
+  .opt-row label{font-size:13.5px;color:var(--text-primary);}
+  .checkbox{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border-strong);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .checkbox.checked{background:var(--primary);border-color:var(--primary);}
+  .checkbox.checked svg{width:12px;height:12px;stroke:#fff;}
+  .radio{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border-strong);flex-shrink:0;position:relative;cursor:pointer;}
+  .radio.checked{border-color:var(--primary);}
+  .radio.checked::after{content:'';position:absolute;inset:4px;border-radius:50%;background:var(--primary);}
+  .toggle{width:40px;height:24px;border-radius:12px;background:var(--border);position:relative;cursor:pointer;flex-shrink:0;}
+  .toggle.on{background:var(--mint);}
+  .toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s;}
+  .toggle.on::after{transform:translateX(16px);}
+  .range-row{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--text-secondary);}
+
+  /* ---------- product detail ---------- */
+  .gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:0;border-radius:var(--radius-lg);}
+  .gallery::-webkit-scrollbar{display:none;}
+  .gallery-slide{scroll-snap-align:start;flex:0 0 100%;aspect-ratio:1/0.9;background:var(--primary-tint);display:flex;align-items:center;justify-content:center;border-radius:var(--radius-lg);}
+  .gallery-slide svg{width:34%;height:34%;stroke:var(--primary);}
+  .pd-titleblock{margin:16px 0 12px;}
+  .pd-name{font-size:19px;font-weight:700;margin:0 0 4px;line-height:1.25;}
+  .pd-meta{font-size:13px;color:var(--text-secondary);margin:0 0 3px;}
+  .pd-stock{font-size:12.5px;font-weight:600;}
+  .pd-rxbar{display:flex;align-items:center;gap:8px;background:var(--warning-tint);border:0.5px solid var(--warning);border-radius:var(--radius-sm);padding:9px 11px;margin:12px 0;}
+  .pd-rxbar svg{width:17px;height:17px;stroke:var(--warning);flex-shrink:0;}
+  .pd-rxbar p{margin:0;font-size:12px;font-weight:600;color:var(--warning);}
+  .status-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;}
+  .status-required{background:var(--warning-tint);color:var(--warning);}
+  .status-uploaded{background:var(--primary-tint-strong);color:var(--primary);}
+  .status-review{background:var(--primary-tint-strong);color:var(--primary);}
+  .status-verified{background:var(--success-tint);color:var(--success);}
+  .status-rejected{background:var(--danger-tint);color:var(--danger);}
+  .pd-price-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:14px;margin:14px 0;}
+  .pd-price-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+  .pd-price-now{font-size:24px;font-weight:700;}
+  .pd-price-mrp{font-size:14px;color:var(--text-muted);text-decoration:line-through;}
+  .pd-price-badge{background:var(--danger-tint);color:var(--danger);font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:5px;}
+  .pd-save{font-size:12px;color:var(--mint-dark);font-weight:600;margin-top:4px;}
+  .unit-select{display:flex;gap:8px;margin:14px 0;}
+  .unit-pill{flex:1;text-align:center;padding:10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:13px;font-weight:600;color:var(--text-secondary);cursor:pointer;min-height:44px;display:flex;flex-direction:column;justify-content:center;}
+  .unit-pill.selected{border-color:var(--primary);background:var(--primary-tint);color:var(--primary);}
+  .unit-pill small{font-size:10.5px;font-weight:500;color:inherit;opacity:.8;}
+  .qty-row{display:flex;align-items:center;justify-content:space-between;margin:14px 0;}
+  .qty-row p{margin:0;font-size:13.5px;font-weight:600;}
+  .qty-box{display:flex;align-items:center;gap:14px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:4px 6px;}
+  .qty-box button{width:28px;height:28px;border-radius:6px;border:none;background:var(--primary-tint);color:var(--primary);font-size:16px;font-weight:700;cursor:pointer;}
+  .accordion{border-top:0.5px solid var(--border);}
+  .acc-item{border-bottom:0.5px solid var(--border);}
+  .acc-head{display:flex;align-items:center;justify-content:space-between;padding:15px 2px;cursor:pointer;min-height:44px;}
+  .acc-head h4{margin:0;font-size:14px;font-weight:600;}
+  .acc-head svg{width:18px;height:18px;stroke:var(--text-secondary);transition:transform .15s;flex-shrink:0;}
+  .acc-item.open .acc-head svg{transform:rotate(180deg);}
+  .acc-body{display:none;padding:0 2px 16px;font-size:13px;color:var(--text-secondary);line-height:1.6;}
+  .acc-item.open .acc-body{display:block;}
+  .acc-body ul{margin:0;padding-left:18px;}
+  .acc-body li{margin-bottom:5px;}
+  .faq-q{font-weight:600;color:var(--text-primary);font-size:13px;margin:0 0 3px;}
+  .faq-a{margin:0 0 14px;}
+  .faq-a:last-child{margin-bottom:0;}
+  .help-card{display:flex;align-items:center;gap:12px;background:var(--primary-tint);border-radius:var(--radius-md);padding:14px;margin:18px 0;}
+  .help-card > div{flex:1;}
+  .help-card p{margin:0;font-size:13px;font-weight:700;}
+  .help-card span{font-size:11.5px;color:var(--text-secondary);}
+  .help-actions{display:flex;gap:8px;margin-top:10px;}
+  .help-actions button{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:9px;font-size:12px;font-weight:600;cursor:pointer;min-height:40px;}
+  .help-actions svg{width:14px;height:14px;stroke:var(--primary);}
+  .disclaimer{font-size:11px;color:var(--text-muted);line-height:1.6;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-top:16px;}
+  .sticky-cta{position:sticky;bottom:0;background:var(--card);border-top:0.5px solid var(--border);padding:12px 16px calc(12px + env(safe-area-inset-bottom));display:flex;gap:10px;align-items:center;margin:0 -16px -16px;z-index:5;}
+  .sticky-price{flex-shrink:0;}
+  .sticky-price .price-now{font-size:16px;}
+
+  /* ---------- cart ---------- */
+  .cart-item{display:flex;gap:11px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:11px;margin-bottom:10px;}
+  .ci-thumb{width:54px;height:54px;border-radius:10px;background:var(--primary-tint);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .ci-thumb svg{width:26px;height:26px;stroke:var(--primary);}
+  .ci-body{flex:1;display:flex;flex-direction:column;gap:4px;}
+  .ci-top{display:flex;justify-content:space-between;gap:8px;}
+  .ci-top p{margin:0;font-size:13px;font-weight:600;line-height:1.3;}
+  .ci-remove{background:none;border:none;cursor:pointer;flex-shrink:0;padding:2px;}
+  .ci-remove svg{width:16px;height:16px;stroke:var(--text-muted);}
+  .ci-meta{font-size:11px;color:var(--text-muted);}
+  .ci-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:2px;}
+  .ci-price{font-size:13.5px;font-weight:700;}
+  .qty-mini{display:flex;align-items:center;gap:10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:3px 5px;}
+  .qty-mini button{width:22px;height:22px;border-radius:5px;border:none;background:var(--primary-tint);color:var(--primary);font-weight:700;cursor:pointer;}
+  .rx-note{display:flex;gap:9px;background:var(--primary-tint);border-radius:var(--radius-sm);padding:11px;margin:14px 0;align-items:flex-start;}
+  .rx-note svg{width:17px;height:17px;stroke:var(--primary);flex-shrink:0;margin-top:1px;}
+  .rx-note p{margin:0;font-size:12px;color:var(--text-primary);font-weight:600;}
+  .rx-note span{font-size:11px;color:var(--text-secondary);}
+  .promo-row{display:flex;gap:8px;margin:16px 0;}
+  .promo-row input{flex:1;border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:11px 12px;font-size:13px;outline:none;}
+  .promo-row button{background:var(--primary-tint);color:var(--primary);border:none;border-radius:var(--radius-sm);padding:0 16px;font-weight:700;font-size:13px;cursor:pointer;}
+  .summary-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:14px;}
+  .sum-row{display:flex;justify-content:space-between;font-size:13px;color:var(--text-secondary);padding:5px 0;}
+  .sum-row.total{border-top:0.5px solid var(--border);margin-top:6px;padding-top:10px;font-size:15px;font-weight:700;color:var(--text-primary);}
+  .sum-row .val-save{color:var(--mint-dark);font-weight:600;}
+  .demo-toggle{font-size:11.5px;color:var(--primary);font-weight:600;background:none;border:none;cursor:pointer;margin-bottom:14px;text-decoration:underline;}
+
+  /* ---------- checkout ---------- */
+  .co-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:14px;margin-bottom:14px;}
+  .co-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .co-card-head h4{margin:0;font-size:13.5px;font-weight:700;}
+  .co-card-head button{background:none;border:none;color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;}
+  .field{margin-bottom:10px;}
+  .field label{font-size:11.5px;color:var(--text-secondary);font-weight:600;display:block;margin-bottom:5px;}
+  .field input,.field select{width:100%;border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:10px 11px;font-size:13.5px;outline:none;background:var(--card);color:var(--text-primary);}
+  .pay-option{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:0.5px solid var(--border);min-height:44px;}
+  .pay-option:last-child{border-bottom:none;}
+  .pay-option p{margin:0;font-size:13.5px;font-weight:600;}
+  .pay-option span{font-size:11px;color:var(--text-muted);}
+  .review-item{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;color:var(--text-secondary);}
+  .review-item b{color:var(--text-primary);font-weight:600;}
+
+  /* ---------- order success ---------- */
+  .success-wrap{text-align:center;padding:40px 20px 20px;}
+  .success-icon{width:74px;height:74px;border-radius:50%;background:var(--mint-tint);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+  .success-icon svg{width:36px;height:36px;stroke:var(--mint);}
+  .success-wrap h2{font-size:19px;margin:0 0 6px;}
+  .success-wrap p{font-size:13.5px;color:var(--text-secondary);margin:0 0 24px;}
+  .order-num{background:var(--primary-tint);border-radius:var(--radius-md);padding:14px;margin-bottom:20px;}
+  .order-num span{font-size:11px;color:var(--text-secondary);}
+  .order-num p{font-size:16px;font-weight:700;margin:4px 0 0;letter-spacing:.02em;}
+
+  /* ---------- account ---------- */
+  .profile-card{display:flex;align-items:center;gap:13px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:18px;}
+  .avatar{width:52px;height:52px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;flex-shrink:0;}
+  .profile-card h3{margin:0 0 2px;font-size:15.5px;}
+  .profile-card span{font-size:12px;color:var(--text-secondary);}
+  .menu-list{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-md);overflow:hidden;margin-bottom:16px;}
+  .menu-row{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:0.5px solid var(--border);cursor:pointer;min-height:44px;}
+  .menu-row:last-child{border-bottom:none;}
+  .menu-row svg{width:19px;height:19px;stroke:var(--text-secondary);flex-shrink:0;}
+  .menu-row p{margin:0;font-size:13.5px;font-weight:500;flex:1;}
+  .menu-row .chev{width:16px;height:16px;stroke:var(--text-muted);}
+  .order-row{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:10px;cursor:pointer;}
+  .order-row-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+  .order-row-top p{margin:0;font-size:13px;font-weight:700;}
+  .order-row-top span{font-size:11px;color:var(--text-muted);}
+  .order-items-line{font-size:12px;color:var(--text-secondary);margin-bottom:8px;}
+  .order-bottom{display:flex;justify-content:space-between;align-items:center;}
+  .order-total{font-size:13px;font-weight:700;}
+
+  /* ---------- timeline ---------- */
+  .timeline{margin:18px 0;}
+  .tl-item{display:flex;gap:12px;position:relative;padding-bottom:22px;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-item::before{content:'';position:absolute;left:10px;top:24px;bottom:0;width:1.5px;background:var(--border);}
+  .tl-item:last-child::before{display:none;}
+  .tl-dot{width:21px;height:21px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;}
+  .tl-item.done .tl-dot{background:var(--mint);}
+  .tl-item.done .tl-dot svg{width:12px;height:12px;stroke:#fff;}
+  .tl-item.current .tl-dot{background:var(--primary);}
+  .tl-body p{margin:0;font-size:13px;font-weight:600;}
+  .tl-body span{font-size:11.5px;color:var(--text-muted);}
+
+  .rx-list-item{display:flex;gap:11px;align-items:center;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:11px;margin-bottom:10px;}
+  .rx-thumb{width:46px;height:46px;border-radius:10px;background:var(--primary-tint);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .rx-thumb svg{width:22px;height:22px;stroke:var(--primary);}
+  .rx-list-item p{margin:0;font-size:12.5px;font-weight:600;}
+  .rx-list-item span{font-size:11px;color:var(--text-muted);}
+
+  .reorder-row{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:0.5px solid var(--border);}
+  .reorder-row:last-child{border-bottom:none;}
+  .reorder-row .ci-thumb{width:44px;height:44px;}
+  .reorder-row p{margin:0;font-size:12.5px;font-weight:600;}
+  .reorder-row span{font-size:11px;color:var(--text-muted);}
+  .btn-reorder{background:var(--primary-tint);color:var(--primary);border:none;border-radius:var(--radius-sm);padding:8px 12px;font-size:11.5px;font-weight:700;cursor:pointer;flex-shrink:0;}
+
+  .toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text-primary);color:var(--card);padding:10px 18px;border-radius:999px;font-size:12.5px;font-weight:600;z-index:90;opacity:0;transition:all .2s;pointer-events:none;display:flex;align-items:center;gap:7px;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast svg{width:15px;height:15px;stroke:var(--mint);}
+
+  h1,h2,h3,h4{color:var(--text-primary);}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ============ TOP BAR ============ -->
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L12 12 L20 12 A8 8 0 1 1 12 4 Z"/><circle cx="12" cy="12" r="2" fill="#fff" stroke="none"/></svg>
+        </div>
+        <div>
+          <div class="logo-text" data-i18n="brand">Medora</div>
+          <div class="logo-sub" data-i18n="tagline">Genuine medicine, delivered</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="lang-toggle">
+          <button id="langEn" class="active" onclick="setLang('en')">EN</button>
+          <button id="langBn" onclick="setLang('bn')">বাং</button>
+        </div>
+        <button class="icon-btn" onclick="showScreen('account')" aria-label="Account">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="search-row">
+      <div class="search-field" onclick="showScreen('search')">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" data-i18n-placeholder="searchPh" placeholder="Search medicine, e.g. Napa" readonly>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ HOME ============ -->
+  <section class="screen active" id="screen-home">
+
+    <div class="section">
+      <div class="hero-scroll" id="heroScroll">
+        <div class="hero-card hero-1">
+          <div class="hero-eyebrow">Limited time</div>
+          <div class="hero-title">Up to 20% off medicine</div>
+          <div class="hero-sub">On selected OTC &amp; wellness</div>
+          <svg class="hero-icon" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
+        </div>
+        <div class="hero-card hero-2">
+          <div class="hero-eyebrow">Free delivery</div>
+          <div class="hero-title">Orders above ৳500</div>
+          <div class="hero-sub">Nationwide, 24-48 hours</div>
+          <svg class="hero-icon" viewBox="0 0 24 24" fill="none" stroke="var(--mint)" stroke-width="1.5"><rect x="2" y="8" width="13" height="9" rx="1.5"/><path d="M15 11h4l3 3v3h-7z"/><circle cx="7" cy="19" r="1.6"/><circle cx="18" cy="19" r="1.6"/></svg>
+        </div>
+        <div class="hero-card hero-3">
+          <div class="hero-eyebrow">No time to search</div>
+          <div class="hero-title">Just upload your prescription</div>
+          <div class="hero-sub">Our pharmacist takes it from there</div>
+          <svg class="hero-icon" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        </div>
+      </div>
+      <div class="dots" id="heroDots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><h2 data-i18n="shopByCategory">Shop by category</h2></div>
+      <div class="cat-grid" id="catGrid"></div>
+    </div>
+
+    <div class="section">
+      <div class="rx-card">
+        <div class="rx-head">
+          <div class="rx-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>
+          </div>
+          <div>
+            <h3 data-i18n="rxTitle">Order with a prescription</h3>
+            <p data-i18n="rxSub">Upload a photo — our pharmacist reads it and confirms your order by phone.</p>
+          </div>
+        </div>
+        <div class="rx-steps">
+          <div class="rx-step"><div class="rx-step-dot">1</div><span>Capture</span></div>
+          <div class="rx-step"><div class="rx-step-dot">2</div><span>Upload</span></div>
+          <div class="rx-step"><div class="rx-step-dot">3</div><span>Verify</span></div>
+          <div class="rx-step"><div class="rx-step-dot">4</div><span>Confirm</span></div>
+          <div class="rx-step"><div class="rx-step-dot">5</div><span>Deliver</span></div>
+        </div>
+        <button class="btn-mint" onclick="openRxUpload()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 20h16"/></svg>
+          <span data-i18n="uploadRx">Upload prescription</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="support-row">
+        <div class="support-card" onclick="callPharmacy()">
+          <div class="support-icon" style="background:var(--primary-tint);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 3a2 2 0 0 1-.4 2.1L8.1 10a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.4c1 .3 2 .5 3 .7a2 2 0 0 1 1.7 2z"/></svg>
+          </div>
+          <p data-i18n="callOrder">Call to order</p>
+          <span>09642-XXXXXX</span>
+        </div>
+        <div class="support-card" onclick="openWhatsapp()">
+          <div class="support-icon" style="background:var(--mint-tint);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--mint-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9.6 8.3 8.5 8.5 0 0 1-3.6-1.3L3 20l1.5-4.5a8.4 8.4 0 0 1-1.4-4.7 8.4 8.4 0 1 1 17.9.7Z"/></svg>
+          </div>
+          <p data-i18n="waSupport">WhatsApp support</p>
+          <span data-i18n="waReply">Replies in minutes</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="carouselHost"></div>
+
+    <div class="section">
+      <div class="trust-wrap">
+        <div class="trust-grid" id="trustGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SEARCH ============ -->
+  <section class="screen" id="screen-search">
+    <div class="search-field" style="margin-bottom:16px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="liveSearch" placeholder="Search medicine, e.g. Napa" oninput="onSearchType(this.value)" autocomplete="off">
+    </div>
+
+    <div id="recentBlock">
+      <div class="section-head"><h2 style="font-size:13.5px;">Recent searches</h2><button class="link-more" onclick="clearRecent()">Clear</button></div>
+      <div class="chip-row" id="recentChips"></div>
+    </div>
+
+    <div id="searchResults" style="margin-top:6px;"></div>
+
+    <div class="state-label">Loading state (example)</div>
+    <div class="search-result" style="border-bottom:0.5px solid var(--border);">
+      <div class="skeleton" style="width:42px;height:42px;border-radius:10px;"></div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+        <div class="skeleton" style="width:65%;height:12px;"></div>
+        <div class="skeleton" style="width:40%;height:10px;"></div>
+      </div>
+    </div>
+
+    <div class="state-label">No results state (example)</div>
+    <div class="empty-state" style="padding:20px 10px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M8 8l6 6M14 8l-6 6"/></svg>
+      <p>No products found</p>
+      <span>Try a different name or generic — or ask our pharmacist on WhatsApp.</span>
+    </div>
+
+    <div class="state-label">Connection error state (example)</div>
+    <div class="empty-state" style="padding:20px 10px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+      <p>Couldn't load results</p>
+      <span>Check your connection and try again.</span>
+      <div style="margin-top:12px;"><button class="btn-outline" style="width:auto;padding:9px 18px;">Retry</button></div>
+    </div>
+  </section>
+
+  <!-- ============ CATEGORIES (tab landing) ============ -->
+  <section class="screen" id="screen-categories">
+    <div class="section-head"><h2>All categories</h2></div>
+    <div class="cat-grid" id="catGridFull"></div>
+  </section>
+
+  <!-- ============ CART ============ -->
+  <section class="screen" id="screen-cart">
+    <button class="demo-toggle" onclick="toggleCartDemo()">Preview: toggle empty / filled cart</button>
+
+    <div id="cartEmpty" style="display:none;">
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+        <p data-i18n="cartEmptyTitle">Your cart is empty</p>
+        <span data-i18n="cartEmptySub">Browse medicines and health products to get started.</span>
+        <div style="margin-top:16px;"><button class="btn-primary" style="width:auto;padding:11px 20px;" onclick="showScreen('home')" data-i18n="continueShopping">Continue shopping</button></div>
+      </div>
+    </div>
+
+    <div id="cartFilled">
+      <div class="section-head"><h2>Your cart <span style="color:var(--text-muted);font-weight:500;font-size:13px;">(3 items)</span></h2></div>
+      <div id="cartItems"></div>
+
+      <div class="rx-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        <div>
+          <p>1 item needs prescription review</p>
+          <span>Seclo 20mg will be verified by our pharmacist before dispatch.</span>
+        </div>
+      </div>
+
+      <div class="promo-row">
+        <input type="text" placeholder="Promo code">
+        <button>Apply</button>
+      </div>
+
+      <div class="summary-card">
+        <div class="sum-row"><span>Subtotal</span><span>৳356.00</span></div>
+        <div class="sum-row"><span>You save</span><span class="val-save">-৳39.60</span></div>
+        <div class="sum-row"><span>Delivery</span><span>Estimated at checkout</span></div>
+        <div class="sum-row total"><span>Total</span><span>৳316.40</span></div>
+      </div>
+    </div>
+
+    <div class="sticky-cta" id="cartCta">
+      <button class="btn-mint" onclick="goCheckout()" data-i18n="checkout">Proceed to checkout</button>
+    </div>
+  </section>
+
+  <!-- ============ ACCOUNT ============ -->
+  <section class="screen" id="screen-account">
+    <div class="profile-card">
+      <div class="avatar">SI</div>
+      <div style="flex:1;">
+        <h3>Saiful Islam</h3>
+        <span>018XX-XXXXXX</span>
+      </div>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </div>
+
+    <div class="section-head"><h2 style="font-size:13.5px;">My orders</h2><button class="link-more" onclick="showScreen('orders')">View all</button></div>
+    <div id="orderPreview"></div>
+
+    <div class="menu-list" style="margin-top:18px;">
+      <div class="menu-row" onclick="showScreen('addresses')">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <p>Saved addresses</p>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+      <div class="menu-row" onclick="showScreen('prescriptions')">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        <p>Uploaded prescriptions</p>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+      <div class="menu-row" onclick="showScreen('saved')">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        <p>Saved products</p>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+    </div>
+
+    <div class="menu-list">
+      <div class="menu-row" onclick="callPharmacy()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4M12 17h.01"/></svg>
+        <p>Support &amp; help centre</p>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+      <div class="menu-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <p>Privacy &amp; permissions</p>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+      <div class="menu-row" style="color:var(--danger);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        <p style="color:var(--danger);">Sign out</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="bottomnav" id="bottomnav">
+    <button class="navitem" data-tab="categories" onclick="showScreen('categories')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span data-i18n="navCategories">Categories</span>
+    </button>
+    <button class="navitem" data-tab="search" onclick="showScreen('search')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <span data-i18n="navSearch">Search</span>
+    </button>
+    <button class="navitem active" data-tab="home" onclick="showScreen('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg>
+      <span data-i18n="navHome">Home</span>
+    </button>
+    <button class="navitem" data-tab="cart" onclick="showScreen('cart')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+      <span data-i18n="navCart">Cart</span>
+      <span class="navbadge" id="cartCount">3</span>
+    </button>
+    <button class="navitem" data-tab="account" onclick="showScreen('account')">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+      <span data-i18n="navAccount">Account</span>
+    </button>
+  </div>
+
+  <!-- ============ OVERLAY: LISTING ============ -->
+  <div class="overlay-screen" id="overlay-listing">
+    <div class="overlay-header">
+      <button class="back-btn" onclick="closeOverlay('listing')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h2 id="listingTitle">Category</h2>
+    </div>
+    <div style="padding:16px;">
+      <div class="listing-head">
+        <div><span id="listingCount">24 products</span></div>
+      </div>
+      <div class="filter-sort-row">
+        <button class="fs-btn" onclick="openSheet('filter')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+          Filter
+        </button>
+        <button class="fs-btn" onclick="openSheet('sort')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11M3 12h7M3 17h4"/><path d="m17 4 3 3-3 3M20 7h-8"/></svg>
+          Sort
+        </button>
+      </div>
+      <div class="prod-grid2" id="listingGrid"></div>
+    </div>
+  </div>
+
+  <!-- ============ OVERLAY: PRODUCT DETAIL ============ -->
+  <div class="overlay-screen" id="overlay-product">
+    <div class="overlay-header">
+      <button class="back-btn" onclick="closeOverlay('product')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h2>Product details</h2>
+    </div>
+    <div style="padding:16px;">
+      <div class="gallery">
+        <div class="gallery-slide"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></div>
+        <div class="gallery-slide"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="10" rx="2"/><path d="M4 11h16"/></svg></div>
+      </div>
+
+      <div class="pd-titleblock">
+        <h1 class="pd-name">Seclo 20mg Capsule</h1>
+        <p class="pd-meta">14 capsules &middot; Omeprazole &middot; Square Pharmaceuticals PLC.</p>
+        <p class="pd-stock stock-in">In stock</p>
+      </div>
+
+      <div class="pd-rxbar">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        <p>Prescription required for this medicine</p>
+      </div>
+      <div style="margin-bottom:14px;"><span class="status-chip status-required" id="pdRxStatus">Status: required — upload at checkout</span></div>
+
+      <div class="pd-price-card">
+        <div class="pd-price-top">
+          <span class="pd-price-now" style="font-size:24px;font-weight:700;">৳135.00</span>
+          <span class="pd-price-mrp">৳150.00</span>
+          <span class="pd-price-badge">10% off</span>
+        </div>
+        <div class="pd-save">You save ৳15.00</div>
+      </div>
+
+      <div class="unit-select">
+        <div class="unit-pill selected" onclick="selectUnit(this)">1 Capsule<br><small>৳9.80</small></div>
+        <div class="unit-pill" onclick="selectUnit(this)">Strip of 14<br><small>৳135.00</small></div>
+      </div>
+
+      <div class="qty-row">
+        <p>Quantity</p>
+        <div class="qty-box">
+          <button onclick="pdQty(-1)">−</button>
+          <span id="pdQtyVal">1</span>
+          <button onclick="pdQty(1)">+</button>
+        </div>
+      </div>
+
+      <div class="accordion" id="pdAccordion"></div>
+
+      <div class="help-card">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4M12 17h.01"/></svg>
+        <div>
+          <p>Need more help?</p>
+          <span>Our licensed pharmacist can guide you.</span>
+          <div class="help-actions">
+            <button onclick="callPharmacy()"><svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 3a2 2 0 0 1-.4 2.1L8.1 10a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.4c1 .3 2 .5 3 .7a2 2 0 0 1 1.7 2z"/></svg>Call pharmacist</button>
+            <button onclick="openWhatsapp()"><svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9.6 8.3 8.5 8.5 0 0 1-3.6-1.3L3 20l1.5-4.5a8.4 8.4 0 0 1-1.4-4.7 8.4 8.4 0 1 1 17.9.7Z"/></svg>WhatsApp</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="disclaimer">Disclaimer: The information provided is accurate to the best of our knowledge. Product packaging, ingredients, specifications, and availability may change without notice. Please check the product packaging before use and consult the manufacturer, pharmacist, doctor, or other qualified professional if you have any questions or concerns.</div>
+    </div>
+    <div class="sticky-cta">
+      <div class="sticky-price"><div class="price-now">৳135.00</div></div>
+      <button class="btn-mint" onclick="addPdToCart()">Add to cart</button>
+    </div>
+  </div>
+
+  <!-- ============ OVERLAY: RX UPLOAD ============ -->
+  <div class="overlay-screen" id="overlay-rxupload">
+    <div class="overlay-header">
+      <button class="back-btn" onclick="closeOverlay('rxupload')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h2>Upload prescription</h2>
+    </div>
+    <div style="padding:16px;">
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:18px;">Upload a clear photo of your prescription. Our licensed pharmacist will review it and call you to confirm your order — no need to search for each medicine yourself.</p>
+
+      <div class="co-card" style="text-align:center;padding:28px 16px;">
+        <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><circle cx="12" cy="14" r="3.5"/></svg>
+        <p style="font-weight:600;font-size:14px;margin:0 0 4px;">Take a photo</p>
+        <span style="font-size:12px;color:var(--text-muted);">or choose from your gallery</span>
+        <div style="display:flex;gap:8px;margin-top:16px;">
+          <button class="btn-outline" onclick="mockUpload()">Camera</button>
+          <button class="btn-outline" onclick="mockUpload()">Gallery</button>
+        </div>
+      </div>
+
+      <div id="rxUploadedBlock" style="display:none;">
+        <div class="rx-list-item" style="margin-top:14px;">
+          <div class="rx-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><circle cx="12" cy="14" r="3"/></svg></div>
+          <div style="flex:1;">
+            <p>prescription_photo.jpg</p>
+            <span>Uploaded just now</span>
+          </div>
+          <span class="status-chip status-uploaded">Uploaded</span>
+        </div>
+        <button class="btn-mint" style="margin-top:18px;" onclick="submitRx()">Submit for pharmacist review</button>
+      </div>
+
+      <div class="disclaimer" style="margin-top:18px;">Your prescription is private — visible only to you and our verifying pharmacist, within your account and order.</div>
+    </div>
+  </div>
+
+  <!-- ============ OVERLAY: ORDERS LIST ============ -->
+  <div class="overlay-screen" id="overlay-orders">
+    <div class="overlay-header">
+      <button class="back-btn" onclick="closeOverlay('orders')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h2>My orders</h2>
+    </div>
+    <div style="padding:16px;" id="ordersFullList"></div>
+  </div>
+
+  <!-- ============ OVERLAY: ORDER DETAIL / TRACKING ============ -->
+  <div class="overlay-screen" id="overlay-orderdetail">
+    <div class="overlay-header">
+      <button class="back-btn" onclick="closeOverlay('orderdetail')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h2>Order #MD-20268841</h2>
+    </div>
+    <div style="padding:16px;">
+      <div class="co-card">
+        <div class="co-card-head"><h4>Order status</h4><span class="status-chip status-review">Out for delivery</span></div>
+        <div class="timeline">
+          <div class="tl-item done"><div class="tl-dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div class="tl-body"><p>Order confirmed</p><span>14 Sep, 10:42 AM</span></div></div>
+          <div class="tl-item done"><div class="tl-dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div class="tl-body"><p>Prescription verified</p><span>14 Sep, 11:15 AM</span></div></div>
+          <div class="tl-item done"><div class="tl-dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div class="tl-body"><p>Packed</p><span>14 Sep, 2:30 PM</span></div></div>
+          <div class="tl-item current"><div class="tl-dot"></div><div class="tl-body"><p>Out for delivery</p><span>Expected by 6:00 PM today</span></div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-body"><p>Delivered</p><span>Pending</span></div></div>
+        </div>
+      </div>
+      <div class="co-card">
+        <h4 style="margin:0 0 10px;font-size:13.5px;">Items</h4>
+        <div class="review-item"><span>Napa 500mg &times; 2 strip</span><b>৳21.60</b></div>
+        <div class="review-item"><span>Seclo 20mg &times; 1 strip</span><b>৳135.00</b></div>
+        <div class="review-item"><span>Delivery</span><b>Free</b></div>
+        <div class="review-item" style="border-top:0.5px solid var(--border);margin-top:6px;padding-top:8px;"><span style="font-weight:700;color:var(--text-primary);">Total paid (COD)</span><b>৳156.60</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ OVERLAY: CHECKOUT ============ -->
+  <div class="overlay-screen" id="overlay-checkout">
+    <div class="overlay-header">
+      <button class="back-btn" onclick="closeOverlay('checkout')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h2>Checkout</h2>
+    </div>
+    <div style="padding:16px;">
+
+      <div class="co-card">
+        <div class="co-card-head"><h4>Delivery address</h4><button>Change</button></div>
+        <div class="field"><label>Full name</label><input type="text" value="Saiful Islam"></div>
+        <div class="field"><label>Phone number</label><input type="text" value="018XX-XXXXXX"></div>
+        <div class="field" style="margin-bottom:0;"><label>Address</label><input type="text" value="House 12, Road 3, Kushtia Sadar, Kushtia"></div>
+      </div>
+
+      <div class="co-card">
+        <div class="co-card-head"><h4>Prescription</h4></div>
+        <div class="rx-list-item" style="margin:0;">
+          <div class="rx-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><circle cx="12" cy="14" r="3"/></svg></div>
+          <div style="flex:1;"><p>prescription_photo.jpg</p><span>Required for Seclo 20mg</span></div>
+          <span class="status-chip status-uploaded">Uploaded</span>
+        </div>
+      </div>
+
+      <div class="co-card">
+        <div class="co-card-head"><h4>Delivery estimate</h4></div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="8" width="13" height="9" rx="1.5"/><path d="M15 11h4l3 3v3h-7z"/><circle cx="7" cy="19" r="1.6"/><circle cx="18" cy="19" r="1.6"/></svg>
+          <div><p style="margin:0;font-size:13px;font-weight:600;">Kushtia Sadar</p><span style="font-size:11.5px;color:var(--text-muted);">Arrives 16 Sep, within Dhaka City +1 day outside</span></div>
+        </div>
+      </div>
+
+      <div class="co-card">
+        <div class="co-card-head"><h4>Payment method</h4></div>
+        <div class="pay-option">
+          <div class="radio checked"></div>
+          <div style="flex:1;"><p>Cash on delivery</p><span>Pay when your order arrives</span></div>
+        </div>
+        <div class="pay-option">
+          <div class="radio"></div>
+          <div style="flex:1;"><p>Mobile banking</p><span>bKash, Nagad — coming soon</span></div>
+        </div>
+      </div>
+
+      <div class="co-card">
+        <div class="co-card-head"><h4>Order review</h4></div>
+        <div class="review-item"><span>Napa 500mg &times; 2 strip</span><b>৳21.60</b></div>
+        <div class="review-item"><span>Seclo 20mg &times; 1 strip</span><b>৳135.00</b></div>
+        <div class="review-item"><span>Vitamin C 500mg &times; 1 box</span><b>৳199.40</b></div>
+        <div class="review-item"><span>Discount</span><b style="color:var(--mint-dark);">-৳39.60</b></div>
+        <div class="review-item"><span>Delivery charge</span><b>Free</b></div>
+        <div class="review-item" style="border-top:0.5px solid var(--border);margin-top:6px;padding-top:8px;"><span style="font-weight:700;color:var(--text-primary);">Total</span><b style="font-size:14.5px;">৳316.40</b></div>
+      </div>
+    </div>
+    <div class="sticky-cta">
+      <button class="btn-mint" onclick="placeOrder()">Place order</button>
+    </div>
+  </div>
+
+  <!-- ============ OVERLAY: ORDER SUCCESS ============ -->
+  <div class="overlay-screen" id="overlay-success">
+    <div class="overlay-header">
+      <button class="back-btn" onclick="closeOverlay('success')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      <h2>Order placed</h2>
+    </div>
+    <div class="success-wrap">
+      <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+      <h2>Order placed successfully</h2>
+      <p>We'll call to confirm before your order is packed.</p>
+      <div class="order-num"><span>Order number</span><p>MD-20268841</p></div>
+      <div class="summary-card" style="text-align:left;margin-bottom:22px;">
+        <div class="sum-row"><span>Expected delivery</span><span style="font-weight:600;color:var(--text-primary);">16 Sep, by 6 PM</span></div>
+        <div class="sum-row"><span>Payment</span><span style="font-weight:600;color:var(--text-primary);">Cash on delivery</span></div>
+        <div class="sum-row"><span>Prescription</span><span class="status-chip status-uploaded" style="font-size:10px;">Under review</span></div>
+      </div>
+      <button class="btn-primary" onclick="trackOrder()">Track order</button>
+      <div style="margin-top:10px;"><button class="btn-outline" onclick="closeOverlay('success');showScreen('home')">Continue shopping</button></div>
+    </div>
+  </div>
+
+  <!-- ============ OVERLAY: ADDRESSES ============ -->
+  <div class="overlay-screen" id="overlay-addresses">
+    <div class="overlay-header">
+      <button class="back-btn" onclick="closeOverlay('addresses')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h2>Saved addresses</h2>
+    </div>
+    <div style="padding:16px;">
+      <div class="co-card">
+        <div class="co-card-head"><h4>Home</h4><span class="status-chip status-uploaded">Default</span></div>
+        <p style="margin:0;font-size:13px;color:var(--text-secondary);">House 12, Road 3, Kushtia Sadar, Kushtia<br>018XX-XXXXXX</p>
+      </div>
+      <div class="co-card">
+        <div class="co-card-head"><h4>Office</h4></div>
+        <p style="margin:0;font-size:13px;color:var(--text-secondary);">Level 3, Thana Road, Kushtia<br>018XX-XXXXXX</p>
+      </div>
+      <button class="btn-outline">+ Add new address</button>
+    </div>
+  </div>
+
+  <!-- ============ OVERLAY: PRESCRIPTIONS LIST ============ -->
+  <div class="overlay-screen" id="overlay-prescriptions">
+    <div class="overlay-header">
+      <button class="back-btn" onclick="closeOverlay('prescriptions')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h2>Uploaded prescriptions</h2>
+    </div>
+    <div style="padding:16px;" id="rxFullList"></div>
+  </div>
+
+  <!-- ============ OVERLAY: SAVED PRODUCTS ============ -->
+  <div class="overlay-screen" id="overlay-saved">
+    <div class="overlay-header">
+      <button class="back-btn" onclick="closeOverlay('saved')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h2>Saved products</h2>
+    </div>
+    <div style="padding:16px;" id="savedList"></div>
+  </div>
+
+  <!-- ============ SHEETS ============ -->
+  <div class="sheet-backdrop" id="sheet-filter" onclick="if(event.target===this)closeSheet('filter')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <p class="sheet-title">Filter</p>
+      <div class="sheet-group">
+        <h4>Price range</h4>
+        <div class="range-row"><span>৳0</span><input type="range" min="0" max="2000" value="800" style="flex:1;"><span>৳2000</span></div>
+      </div>
+      <div class="sheet-group">
+        <h4>Brand</h4>
+        <div class="opt-row"><label>Square Pharmaceuticals</label><div class="checkbox checked" onclick="this.classList.toggle('checked')"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div></div>
+        <div class="opt-row"><label>Beximco Pharmaceuticals</label><div class="checkbox" onclick="this.classList.toggle('checked')"></div></div>
+        <div class="opt-row"><label>ACME Laboratories</label><div class="checkbox" onclick="this.classList.toggle('checked')"></div></div>
+      </div>
+      <div class="sheet-group">
+        <h4>Prescription</h4>
+        <div class="opt-row"><label>Prescription required only</label><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+        <div class="opt-row"><label>OTC only</label><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+      </div>
+      <div class="sheet-group">
+        <h4>Availability</h4>
+        <div class="opt-row"><label>In stock only</label><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      </div>
+      <div class="sheet-group">
+        <h4>Discount</h4>
+        <div class="opt-row"><label>10% or more</label><div class="checkbox" onclick="this.classList.toggle('checked')"></div></div>
+        <div class="opt-row"><label>20% or more</label><div class="checkbox" onclick="this.classList.toggle('checked')"></div></div>
+      </div>
+      <button class="btn-mint" onclick="closeSheet('filter')">Apply filters</button>
+    </div>
+  </div>
+
+  <div class="sheet-backdrop" id="sheet-sort" onclick="if(event.target===this)closeSheet('sort')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <p class="sheet-title">Sort by</p>
+      <div class="opt-row"><label>Relevance</label><div class="radio checked" onclick="pickRadio(this)"></div></div>
+      <div class="opt-row"><label>Price: low to high</label><div class="radio" onclick="pickRadio(this)"></div></div>
+      <div class="opt-row"><label>Price: high to low</label><div class="radio" onclick="pickRadio(this)"></div></div>
+      <div class="opt-row"><label>Highest discount</label><div class="radio" onclick="pickRadio(this)"></div></div>
+      <button class="btn-mint" style="margin-top:14px;" onclick="closeSheet('sort')">Done</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span id="toastText">Added to cart</span></div>
+
+</div>
+<script>
+/* ---------------- icon helpers ---------------- */
+function icon(name){
+  const s='stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"';
+  const icons={
+    tablet:'<svg viewBox="0 0 24 24" '+s+'><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>',
+    rx:'<svg viewBox="0 0 24 24" '+s+'><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>',
+    vitamin:'<svg viewBox="0 0 24 24" '+s+'><rect x="7" y="2" width="10" height="20" rx="5"/><path d="M7 12h10"/></svg>',
+    drop:'<svg viewBox="0 0 24 24" '+s+'><path d="M12 2s7 8 7 13a7 7 0 0 1-14 0c0-5 7-13 7-13z"/></svg>',
+    baby:'<svg viewBox="0 0 24 24" '+s+'><circle cx="12" cy="9" r="5"/><path d="M8 9a4 4 0 0 0 8 0"/><path d="M12 14v7M9 21h6"/></svg>',
+    bottle:'<svg viewBox="0 0 24 24" '+s+'><path d="M9 2h6v4l2 3v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9l2-3z"/><path d="M9 11h6"/></svg>',
+    skin:'<svg viewBox="0 0 24 24" '+s+'><circle cx="12" cy="12" r="9"/><path d="M9 9h.01M15 9h.01M8 14c1.2 1.4 2.6 2 4 2s2.8-.6 4-2"/></svg>',
+    device:'<svg viewBox="0 0 24 24" '+s+'><rect x="4" y="4" width="16" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
+    aid:'<svg viewBox="0 0 24 24" '+s+'><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M12 10v6M9 13h6"/><path d="M9 6V5a3 3 0 0 1 6 0v1"/></svg>',
+    star:'<svg viewBox="0 0 24 24" '+s+'><path d="M12 2l3 6.5 7 1-5 5 1.5 7L12 18l-6.5 3.5L7 14.5l-5-5 7-1z"/></svg>',
+    shield:'<svg viewBox="0 0 24 24" '+s+'><path d="M12 2 4 5v6c0 5 4 9 8 11 4-2 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>',
+    lock:'<svg viewBox="0 0 24 24" '+s+'><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+    truck:'<svg viewBox="0 0 24 24" '+s+'><rect x="2" y="8" width="13" height="9" rx="1.5"/><path d="M15 11h4l3 3v3h-7z"/><circle cx="7" cy="19" r="1.6"/><circle cx="18" cy="19" r="1.6"/></svg>',
+    clock:'<svg viewBox="0 0 24 24" '+s+'><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>',
+  };
+  return icons[name]||icons.tablet;
+}
+
+/* ---------------- i18n ---------------- */
+const I18N={
+  en:{brand:"Medora",tagline:"Genuine medicine, delivered",searchPh:"Search medicine, e.g. Napa",shopByCategory:"Shop by category",rxTitle:"Order with a prescription",rxSub:"Upload a photo — our pharmacist reads it and confirms your order by phone.",uploadRx:"Upload prescription",callOrder:"Call to order",waSupport:"WhatsApp support",waReply:"Replies in minutes",navCategories:"Categories",navSearch:"Search",navHome:"Home",navCart:"Cart",navAccount:"Account",checkout:"Proceed to checkout",cartEmptyTitle:"Your cart is empty",cartEmptySub:"Browse medicines and health products to get started.",continueShopping:"Continue shopping"},
+  bn:{brand:"মেডোরা",tagline:"আসল ওষুধ, দ্রুত ডেলিভারি",searchPh:"ওষুধ খুঁজুন, যেমন নাপা",shopByCategory:"ক্যাটাগরি অনুযায়ী কিনুন",rxTitle:"প্রেসক্রিপশন দিয়ে অর্ডার করুন",rxSub:"ছবি আপলোড করুন — আমাদের ফার্মাসিস্ট দেখে ফোনে অর্ডার নিশ্চিত করবেন।",uploadRx:"প্রেসক্রিপশন আপলোড করুন",callOrder:"কল করে অর্ডার করুন",waSupport:"হোয়াটসঅ্যাপ সাপোর্ট",waReply:"কয়েক মিনিটে উত্তর",navCategories:"ক্যাটাগরি",navSearch:"খুঁজুন",navHome:"হোম",navCart:"কার্ট",navAccount:"অ্যাকাউন্ট",checkout:"চেকআউটে যান",cartEmptyTitle:"আপনার কার্ট খালি",cartEmptySub:"ওষুধ ও স্বাস্থ্য পণ্য ব্রাউজ করুন।",continueShopping:"কেনাকাটা চালিয়ে যান"}
+};
+function setLang(l){
+  document.getElementById('langEn').classList.toggle('active',l==='en');
+  document.getElementById('langBn').classList.toggle('active',l==='bn');
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n'); if(I18N[l][k]) el.textContent=I18N[l][k];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    const k=el.getAttribute('data-i18n-placeholder'); if(I18N[l][k]) el.placeholder=I18N[l][k];
+  });
+  document.body.style.fontFamily = l==='bn' ? "'Noto Sans Bengali','Plus Jakarta Sans',sans-serif" : "var(--font)";
+}
+
+/* ---------------- data ---------------- */
+const CATEGORIES=[
+  {name:"OTC Medicine",icon:"tablet",bg:"var(--primary-tint)",fg:"var(--primary)"},
+  {name:"Prescription Medicine",icon:"rx",bg:"var(--mint-tint)",fg:"var(--mint-dark)"},
+  {name:"Vitamins & Supplements",icon:"vitamin",bg:"var(--primary-tint)",fg:"var(--primary)"},
+  {name:"Diabetes Care",icon:"drop",bg:"var(--mint-tint)",fg:"var(--mint-dark)"},
+  {name:"Baby Care",icon:"baby",bg:"var(--primary-tint)",fg:"var(--primary)"},
+  {name:"Personal Care",icon:"bottle",bg:"var(--mint-tint)",fg:"var(--mint-dark)"},
+  {name:"Skin Care",icon:"skin",bg:"var(--primary-tint)",fg:"var(--primary)"},
+  {name:"Devices",icon:"device",bg:"var(--mint-tint)",fg:"var(--mint-dark)"},
+  {name:"First Aid",icon:"aid",bg:"var(--primary-tint)",fg:"var(--primary)"},
+];
+
+const PRODUCTS=[
+  {id:1,name:"Napa 500mg Tablet",meta:"10 tablets · Paracetamol · Beximco",price:10.80,mrp:12.00,off:10,stock:"in",rx:false,cat:"OTC Medicine"},
+  {id:2,name:"Seclo 20mg Capsule",meta:"14 capsules · Omeprazole · Square",price:135.00,mrp:150.00,off:10,stock:"in",rx:true,cat:"Prescription Medicine"},
+  {id:3,name:"Vitamin C 500mg",meta:"30 tablets · ACME Laboratories",price:199.40,mrp:249.00,off:20,stock:"in",rx:false,cat:"Vitamins & Supplements"},
+  {id:4,name:"Glucometer Strips",meta:"25 strips · Vivacheck Biotech",price:452.76,mrp:462.00,off:2,stock:"low",rx:false,cat:"Diabetes Care"},
+  {id:5,name:"Baby Diaper Small",meta:"30 pcs · NeoCare",price:585.00,mrp:780.00,off:25,stock:"in",rx:false,cat:"Baby Care"},
+  {id:6,name:"Hand Sanitizer 200ml",meta:"Alcohol 70% · SkinO",price:120.00,mrp:150.00,off:20,stock:"in",rx:false,cat:"Personal Care"},
+  {id:7,name:"Sunscreen SPF 50+",meta:"50gm · SkinO Care & Repair",price:299.00,mrp:390.00,off:23,stock:"in",rx:false,cat:"Skin Care"},
+  {id:8,name:"Digital Thermometer",meta:"Technokit Healthcare",price:216.00,mrp:300.00,off:28,stock:"out",rx:false,cat:"Devices"},
+  {id:9,name:"Antiseptic Bandage Roll",meta:"4inch x 4m · MediPlus",price:45.00,mrp:55.00,off:18,stock:"in",rx:false,cat:"First Aid"},
+  {id:10,name:"Fexo 120mg Tablet",meta:"10 tablets · Fexofenadine · Square",price:85.50,mrp:90.00,off:5,stock:"in",rx:true,cat:"OTC Medicine"},
+  {id:11,name:"Insulin Syringe 1ml",meta:"U-100 · Technokit",price:10.80,mrp:12.00,off:10,stock:"in",rx:false,cat:"Diabetes Care"},
+  {id:12,name:"Zinc + Vitamin D3",meta:"30 tablets · Renata Limited",price:180.00,mrp:220.00,off:18,stock:"in",rx:false,cat:"Vitamins & Supplements"},
+];
+const CAROUSELS=[
+  {title:"Best deals",filter:p=>p.off>=18},
+  {title:"OTC medicine",filter:p=>p.cat==="OTC Medicine"},
+  {title:"Skin care",filter:p=>p.cat==="Skin Care" || p.cat==="Personal Care"},
+  {title:"Diabetic care",filter:p=>p.cat==="Diabetes Care"},
+  {title:"Baby care",filter:p=>p.cat==="Baby Care"},
+  {title:"Supplements",filter:p=>p.cat==="Vitamins & Supplements"},
+];
+
+const TRUST=[
+  {icon:"shield",title:"100% genuine products",sub:"Sourced from licensed distributors"},
+  {icon:"rx",title:"Licensed pharmacist support",sub:"Every order reviewed"},
+  {icon:"lock",title:"Secure payments",sub:"COD, with more options soon"},
+  {icon:"truck",title:"Nationwide delivery",sub:"64 districts covered"},
+];
+
+function priceRow(p){
+  const stockHtml = p.stock==='in' ? '<span class="stock-line stock-in">In stock</span>'
+    : p.stock==='low' ? '<span class="stock-line stock-low">Only a few left</span>'
+    : '<span class="stock-line stock-out">Out of stock</span>';
+  return {stockHtml};
+}
+
+function productCardHtml(p, wide){
+  const {stockHtml}=priceRow(p);
+  const addBtn = p.stock==='out'
+    ? '<button class="btn-add disabled" disabled>Out of stock</button>'
+    : '<button class="btn-add" onclick="event.stopPropagation();quickAdd(this,'+p.id+')">+ Add</button>';
+  return '<div class="prod-card'+(wide?' grid-card':'')+'" onclick="openProduct('+p.id+')">'
+    + '<div class="prod-img">'
+      + (p.off>0?'<span class="badge">'+p.off+'% off</span>':'')
+      + (p.rx?'<span class="rx-badge">Rx</span>':'')
+      + icon(p.rx?'rx':'tablet')
+    + '</div>'
+    + '<div class="prod-info">'
+      + '<div class="prod-name">'+p.name+'</div>'
+      + '<div class="prod-meta">'+p.meta+'</div>'
+      + '<div class="prod-price-row"><span class="price-now">৳'+p.price.toFixed(2)+'</span><span class="price-mrp">৳'+p.mrp.toFixed(2)+'</span></div>'
+      + stockHtml
+      + '<div class="add-row">'+addBtn+'</div>'
+    + '</div></div>';
+}
+
+/* ---------------- render home ---------------- */
+function renderCatGrid(targetId){
+  document.getElementById(targetId).innerHTML = CATEGORIES.map(c=>
+    '<div class="cat-item" onclick="openListing(\''+c.name+'\')">'
+    + '<div class="cat-icon" style="background:'+c.bg+';color:'+c.fg+';">'+icon(c.icon)+'</div>'
+    + '<span>'+c.name+'</span></div>'
+  ).join('');
+}
+function renderTrust(){
+  document.getElementById('trustGrid').innerHTML = TRUST.map(t=>
+    '<div class="trust-item">'+icon(t.icon)+'<div><p>'+t.title+'</p><span>'+t.sub+'</span></div></div>'
+  ).join('');
+}
+function renderCarousels(){
+  document.getElementById('carouselHost').innerHTML = CAROUSELS.map(c=>{
+    const items=PRODUCTS.filter(c.filter).slice(0,6);
+    if(!items.length) return '';
+    return '<div class="section"><div class="section-head"><h2>'+c.title+'</h2><button class="link-more" onclick="openListing(\''+c.title+'\')">See all<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div>'
+      + '<div class="prod-scroll">'+items.map(p=>productCardHtml(p,false)).join('')+'</div></div>';
+  }).join('');
+}
+
+/* ---------------- screen switching ---------------- */
+const TABS=['categories','search','home','cart','account'];
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById('screen-'+name);
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.navitem').forEach(n=>n.classList.toggle('active', n.dataset.tab===name));
+  window.scrollTo(0,0);
+  if(name==='search') setTimeout(()=>document.getElementById('liveSearch').focus(),200);
+}
+
+/* ---------------- overlays ---------------- */
+function openOverlay(name){ document.getElementById('overlay-'+name).classList.add('active'); document.getElementById('overlay-'+name).scrollTop=0; }
+function closeOverlay(name){ document.getElementById('overlay-'+name).classList.remove('active'); }
+
+let currentListingTitle='';
+function openListing(title){
+  currentListingTitle=title;
+  document.getElementById('listingTitle').textContent=title;
+  const items = PRODUCTS.filter(p=> p.cat===title || title.toLowerCase().includes(p.cat.toLowerCase().split(' ')[0].toLowerCase()) || title==='Best deals'||title==='OTC medicine'||title==='Skin care'||title==='Diabetic care'||title==='Baby care'||title==='Supplements' );
+  let list = PRODUCTS.filter(p=>p.cat===title);
+  if(!list.length){
+    const map={'Best deals':p=>p.off>=18,'OTC medicine':p=>p.cat==='OTC Medicine','Skin care':p=>p.cat==='Skin Care'||p.cat==='Personal Care','Diabetic care':p=>p.cat==='Diabetes Care','Baby care':p=>p.cat==='Baby Care','Supplements':p=>p.cat==='Vitamins & Supplements'};
+    list = map[title] ? PRODUCTS.filter(map[title]) : PRODUCTS;
+  }
+  document.getElementById('listingCount').textContent=list.length+' products';
+  document.getElementById('listingGrid').innerHTML = list.map(p=>productCardHtml(p,true)).join('') || '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:30px 0;">No products in this category yet.</p>';
+  openOverlay('listing');
+}
+
+let currentProduct=null;
+const ACC_SECTIONS=[
+  {t:"Product overview",open:true,body:"Seclo 20mg contains Omeprazole, a proton pump inhibitor that reduces stomach acid production. It's commonly used to treat acid reflux, gastric ulcers, and heartburn."},
+  {t:"Key benefits",body:"<ul><li>Relieves heartburn and acid reflux</li><li>Heals stomach and duodenal ulcers</li><li>Reduces risk of ulcers from long-term NSAID use</li></ul>"},
+  {t:"Ingredients / composition",body:"Each capsule contains Omeprazole INN 20mg as enteric-coated pellets."},
+  {t:"How to use / dosage",body:"Take one capsule daily before breakfast, or as directed by your physician. Swallow whole — do not crush or chew. Typical course: 4–8 weeks, depending on condition."},
+  {t:"Warnings and precautions",body:"Inform your pharmacist if you have liver disease, are on blood thinners, or take this medicine for more than 8 weeks continuously."},
+  {t:"Side effects",body:"<ul><li>Headache, nausea, or stomach pain</li><li>Diarrhoea or constipation</li><li>Rarely: vitamin B12 deficiency with long-term use</li></ul>"},
+  {t:"Storage conditions",body:"Store below 30°C in a dry place, away from direct sunlight. Keep out of reach of children."},
+  {t:"Manufacturer and origin",body:"Manufactured by Square Pharmaceuticals PLC., Bangladesh."},
+  {t:"Frequently asked questions",faq:[
+    ["What is this product used for?","It treats acid reflux, heartburn, and stomach or duodenal ulcers by reducing stomach acid."],
+    ["How should I use it?","Take one capsule daily before breakfast, swallowed whole with water."],
+    ["Who should avoid using it?","Anyone with a known allergy to Omeprazole, or on certain interacting medicines — check with your pharmacist."],
+    ["Can it be used during pregnancy or breastfeeding?","Only under medical advice — please consult your doctor before use."],
+    ["What are the possible side effects or precautions?","Mild headache or nausea are most common; long-term use should be monitored by a doctor."],
+    ["How should it be stored?","Below 30°C, in a dry place away from direct sunlight."]
+  ]}
+];
+function renderAccordion(){
+  document.getElementById('pdAccordion').innerHTML = ACC_SECTIONS.map((s,i)=>{
+    let bodyHtml = s.body || '';
+    if(s.faq){
+      bodyHtml = s.faq.map(([q,a])=>'<p class="faq-q">'+q+'</p><p class="faq-a">'+a+'</p>').join('');
+    }
+    return '<div class="acc-item'+(s.open?' open':'')+'"><div class="acc-head" onclick="toggleAcc(this)"><h4>'+s.t+'</h4><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div><div class="acc-body">'+bodyHtml+'</div></div>';
+  }).join('');
+}
+function toggleAcc(head){ head.parentElement.classList.toggle('open'); }
+
+function openProduct(id){ currentProduct = PRODUCTS.find(p=>p.id===id) || PRODUCTS[1]; renderAccordion(); openOverlay('product'); }
+function selectUnit(el){ document.querySelectorAll('.unit-pill').forEach(u=>u.classList.remove('selected')); el.classList.add('selected'); }
+let pdQtyN=1;
+function pdQty(d){ pdQtyN=Math.max(1,pdQtyN+d); document.getElementById('pdQtyVal').textContent=pdQtyN; }
+function addPdToCart(){ showToast('Added to cart'); bumpCartCount(pdQtyN); }
+
+/* ---------------- rx upload ---------------- */
+function openRxUpload(){ document.getElementById('rxUploadedBlock').style.display='none'; openOverlay('rxupload'); }
+function mockUpload(){ document.getElementById('rxUploadedBlock').style.display='block'; }
+function submitRx(){ closeOverlay('rxupload'); showToast('Prescription submitted for review'); }
+
+/* ---------------- cart ---------------- */
+const CART_ITEMS=[
+  {p:PRODUCTS[0],qty:2,unit:'Strip'},
+  {p:PRODUCTS[1],qty:1,unit:'Strip'},
+  {p:PRODUCTS[2],qty:1,unit:'Box'},
+];
+function renderCart(){
+  document.getElementById('cartItems').innerHTML = CART_ITEMS.map((c,i)=>
+    '<div class="cart-item">'
+    +'<div class="ci-thumb">'+icon(c.p.rx?'rx':'tablet')+'</div>'
+    +'<div class="ci-body"><div class="ci-top"><p>'+c.p.name+'</p><button class="ci-remove" onclick="removeCartItem('+i+')"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>'
+    +'<div class="ci-meta">'+c.unit+' &middot; ৳'+c.p.price.toFixed(2)+' each</div>'
+    +'<div class="ci-bottom"><span class="ci-price">৳'+(c.p.price*c.qty).toFixed(2)+'</span><div class="qty-mini"><button onclick="cartQty('+i+',-1)">−</button><span>'+c.qty+'</span><button onclick="cartQty('+i+',1)">+</button></div></div>'
+    +'</div></div>'
+  ).join('');
+}
+function cartQty(i,d){ CART_ITEMS[i].qty=Math.max(1,CART_ITEMS[i].qty+d); renderCart(); }
+function removeCartItem(i){ CART_ITEMS.splice(i,1); renderCart(); showToast('Removed from cart'); }
+function toggleCartDemo(){
+  const empty=document.getElementById('cartEmpty'), filled=document.getElementById('cartFilled'), cta=document.getElementById('cartCta');
+  const showingEmpty = empty.style.display==='block';
+  empty.style.display = showingEmpty?'none':'block';
+  filled.style.display = showingEmpty?'block':'none';
+  cta.style.display = showingEmpty?'flex':'none';
+}
+function quickAdd(btn,id){
+  const qtyHtml='<div class="qty-stepper"><button onclick="event.stopPropagation();this.parentElement.previousElementSibling">−</button><span>1</span><button onclick="event.stopPropagation()">+</button></div>';
+  btn.outerHTML=qtyHtml;
+  showToast('Added to cart');
+  bumpCartCount(1);
+}
+let cartCountN=3;
+function bumpCartCount(n){ cartCountN+=n; document.getElementById('cartCount').textContent=cartCountN; }
+function goCheckout(){ openOverlay('checkout'); }
+function placeOrder(){ closeOverlay('checkout'); openOverlay('success'); }
+function trackOrder(){ closeOverlay('success'); openOverlay('orderdetail'); }
+
+/* ---------------- orders / account lists ---------------- */
+const ORDERS=[
+  {id:'MD-20268841',date:'14 Sep 2026',items:'Napa, Seclo, Vitamin C',total:316.40,status:'Out for delivery',cls:'status-review'},
+  {id:'MD-20267190',date:'02 Sep 2026',items:'Fexo 120mg',total:85.50,status:'Delivered',cls:'status-verified'},
+  {id:'MD-20265533',date:'21 Aug 2026',items:'Glucometer strips, Insulin syringe',total:463.56,status:'Prescription review',cls:'status-review'},
+  {id:'MD-20263312',date:'10 Aug 2026',items:'Baby diaper small',total:585.00,status:'Cancelled',cls:'status-rejected'},
+];
+function renderOrders(targetId,limit){
+  const list = limit?ORDERS.slice(0,limit):ORDERS;
+  document.getElementById(targetId).innerHTML = list.map(o=>
+    '<div class="order-row" onclick="openOverlay(\'orderdetail\')">'
+    +'<div class="order-row-top"><p>#'+o.id+'</p><span>'+o.date+'</span></div>'
+    +'<div class="order-items-line">'+o.items+'</div>'
+    +'<div class="order-bottom"><span class="order-total">৳'+o.total.toFixed(2)+'</span><span class="status-chip '+o.cls+'">'+o.status+'</span></div>'
+    +'</div>'
+  ).join('');
+}
+
+const RX_LIST=[
+  {name:'prescription_seclo.jpg',date:'14 Sep 2026',status:'Under review',cls:'status-review'},
+  {name:'prescription_augmentin.jpg',date:'02 Sep 2026',status:'Verified',cls:'status-verified'},
+  {name:'prescription_old.jpg',date:'12 Jul 2026',status:'Rejected',cls:'status-rejected'},
+];
+function renderRxList(){
+  document.getElementById('rxFullList').innerHTML = RX_LIST.map(r=>
+    '<div class="rx-list-item"><div class="rx-thumb">'+icon('rx')+'</div><div style="flex:1;"><p>'+r.name+'</p><span>'+r.date+'</span></div><span class="status-chip '+r.cls+'">'+r.status+'</span></div>'
+  ).join('');
+}
+
+function renderSaved(){
+  const saved=PRODUCTS.slice(0,4);
+  document.getElementById('savedList').innerHTML = saved.map(p=>
+    '<div class="reorder-row"><div class="ci-thumb">'+icon(p.rx?'rx':'tablet')+'</div><div style="flex:1;"><p>'+p.name+'</p><span>৳'+p.price.toFixed(2)+'</span></div><button class="btn-reorder" onclick="showToast(\'Added to cart\')">Reorder</button></div>'
+  ).join('');
+}
+
+/* ---------------- search ---------------- */
+let RECENT=['Napa','Seclo 20mg','Vitamin C'];
+function renderRecent(){
+  document.getElementById('recentChips').innerHTML = RECENT.map(r=>
+    '<div class="chip" onclick="document.getElementById(\'liveSearch\').value=\''+r+'\';onSearchType(\''+r+'\')">'+r+'</div>'
+  ).join('');
+}
+function clearRecent(){ RECENT=[]; renderRecent(); }
+function onSearchType(v){
+  document.getElementById('recentBlock').style.display = v ? 'none':'block';
+  const box=document.getElementById('searchResults');
+  if(!v){ box.innerHTML=''; return; }
+  const results = PRODUCTS.filter(p=>p.name.toLowerCase().includes(v.toLowerCase()));
+  if(!results.length){ box.innerHTML=''; return; }
+  box.innerHTML = results.map(p=>
+    '<div class="search-result" onclick="showScreen(\'home\');openProduct('+p.id+')">'
+    +'<div class="sr-thumb">'+icon(p.rx?'rx':'tablet')+'</div>'
+    +'<div class="sr-text"><p>'+p.name+'</p><span>'+p.meta+'</span></div>'
+    +'</div>'
+  ).join('');
+}
+
+/* ---------------- sheets ---------------- */
+function openSheet(name){ document.getElementById('sheet-'+name).classList.add('active'); }
+function closeSheet(name){ document.getElementById('sheet-'+name).classList.remove('active'); }
+function pickRadio(el){ el.closest('.sheet').querySelectorAll('.radio').forEach(r=>r.classList.remove('checked')); el.classList.add('checked'); }
+
+/* ---------------- misc actions ---------------- */
+function callPharmacy(){ showToast('Opening dialer…'); }
+function openWhatsapp(){ showToast('Opening WhatsApp…'); }
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toastText').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+/* ---------------- hero dots ---------------- */
+document.getElementById('heroScroll').addEventListener('scroll', function(){
+  const idx=Math.round(this.scrollLeft/this.clientWidth*0.88);
+  document.querySelectorAll('#heroDots .dot').forEach((d,i)=>d.classList.toggle('active',i===Math.min(idx,2)));
+});
+
+/* ---------------- init ---------------- */
+renderCatGrid('catGrid');
+renderCatGrid('catGridFull');
+renderTrust();
+renderCarousels();
+renderCart();
+renderOrders('orderPreview',2);
+renderOrders('ordersFullList');
+renderRxList();
+renderSaved();
+renderRecent();
+document.getElementById('cartEmpty').style.display='none';
+</script>
+</body>
+</html>
