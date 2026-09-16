@@ -4,7 +4,7 @@ import { z } from "zod";
 import { RefundMethod, StockAdjustmentReason } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { prisma, TRANSACTION_TIMEOUT_MS } from "@/lib/prisma";
 import { incrementBatchQuantity } from "@/lib/stock";
 
 export interface SaleForReturn {
@@ -149,7 +149,7 @@ export async function createReturn(input: CreateReturnInput): Promise<{ success:
           });
         }
       }
-    });
+    }, { timeout: TRANSACTION_TIMEOUT_MS });
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Return failed" };
   }

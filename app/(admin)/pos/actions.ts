@@ -4,7 +4,7 @@ import { z } from "zod";
 import { PaymentMethod } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { prisma, TRANSACTION_TIMEOUT_MS } from "@/lib/prisma";
 import { allocateFefoStock, InsufficientStockError } from "@/lib/stock";
 import { resolveSaleLinePricing, computeLineVat, Decimal } from "@/lib/pricing";
 import { getNextInvoiceNumber } from "@/lib/invoice";
@@ -131,7 +131,7 @@ export async function createPosSale(input: CreatePosSaleInput): Promise<CreatePo
       }
 
       return { invoiceNumber: sale.invoiceNumber!, total: total.toNumber() };
-    });
+    }, { timeout: TRANSACTION_TIMEOUT_MS });
 
     return { success: true, ...result };
   } catch (error) {

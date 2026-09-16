@@ -4,7 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { prisma, TRANSACTION_TIMEOUT_MS } from "@/lib/prisma";
 import { convertPurchaseLineToBaseUnits } from "@/lib/pricing";
 
 const ReceiveLineSchema = z.object({
@@ -118,7 +118,7 @@ export async function receivePurchaseOrder(
           receivedAt: newStatus === "RECEIVED" || newStatus === "PARTIALLY_RECEIVED" ? new Date() : order.receivedAt,
         },
       });
-    });
+    }, { timeout: TRANSACTION_TIMEOUT_MS });
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Failed to receive purchase order" };
   }

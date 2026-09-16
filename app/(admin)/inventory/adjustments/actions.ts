@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { StockAdjustmentReason } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
-import { prisma } from "@/lib/prisma";
+import { prisma, TRANSACTION_TIMEOUT_MS } from "@/lib/prisma";
 import { decrementBatchQuantity, InsufficientStockError } from "@/lib/stock";
 
 const AdjustmentSchema = z.object({
@@ -53,7 +53,7 @@ export async function createStockAdjustment(
           adjustedById: session.user.id,
         },
       });
-    });
+    }, { timeout: TRANSACTION_TIMEOUT_MS });
   } catch (error) {
     if (error instanceof InsufficientStockError) {
       return { success: false, error: error.message };
