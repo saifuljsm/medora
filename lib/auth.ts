@@ -88,9 +88,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           data: { failedLoginAttempts: 0, lockedUntil: null, lastLoginAt: new Date() },
         });
 
-        // TODO(Phase 1.3): when user.twoFactorEnabled, short-circuit here and
-        // require a verified TOTP code before returning the user — 2FA is
-        // mandatory for OWNER/ADMIN roles per the build spec §7.
+        // TODO: when user.twoFactorEnabled, short-circuit here and require a
+        // verified TOTP code before returning the user — 2FA is mandatory
+        // for OWNER/ADMIN roles per the build spec §7. Not yet scheduled to
+        // a specific build-order phase; needs its own TOTP setup/verify UI.
 
         return {
           id: user.id,
@@ -105,15 +106,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      const appToken = token as unknown as AppJWT;
       if (user) {
         const authorizedUser = user as unknown as AuthorizedUser;
-        const appToken = token as unknown as AppJWT;
         appToken.id = authorizedUser.id;
         appToken.orgId = authorizedUser.orgId;
         appToken.branchId = authorizedUser.branchId;
         appToken.roles = authorizedUser.roles;
         appToken.mustChangePassword = authorizedUser.mustChangePassword;
+      }
+      // Lets the client call useSession().update({ mustChangePassword: false })
+      // right after a successful password change, instead of forcing a
+      // full re-login just to clear the forced-change redirect.
+      if (trigger === "update" && session && typeof session === "object" && "mustChangePassword" in session) {
+        appToken.mustChangePassword = Boolean((session as { mustChangePassword: unknown }).mustChangePassword);
       }
       return token;
     },

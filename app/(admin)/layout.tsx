@@ -1,9 +1,16 @@
-// TODO(Phase 1.3): gate this layout on a staff session — redirect to /login
-// when unauthenticated, and force /change-password when
-// session.user.mustChangePassword is true. Every admin server action
-// already calls assertCan() independently, so this layout is a UX
-// convenience, not the security boundary.
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { AdminShell } from "@/components/admin/admin-shell";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  return <div className="min-h-screen bg-background">{children}</div>;
+// UX-level gate: redirects unauthenticated staff to /login and forces a
+// password change on first login before anything else in (admin) renders.
+// This is not the security boundary by itself — every admin server action
+// independently calls assertCan() (lib/permissions.ts), which is what
+// actually enforces role scope.
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+  if (session.user.mustChangePassword) redirect("/change-password");
+
+  return <AdminShell user={session.user}>{children}</AdminShell>;
 }
