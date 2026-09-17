@@ -26,6 +26,7 @@ export default async function ProductEditPage({ params }: { params: { id: string
           packSize: product.packSize ?? undefined,
           barcode: product.barcode ?? undefined,
           defaultMrp: product.defaultMrp != null ? Number(product.defaultMrp) : undefined,
+          discountPercent: product.discountPercent != null ? Number(product.discountPercent) : undefined,
           vatRate: product.vatRate != null ? Number(product.vatRate) : undefined,
           sellsByUnit: product.sellsByUnit,
           unitLabel: product.unitLabel ?? undefined,

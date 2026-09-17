@@ -22,6 +22,7 @@ interface PosProduct {
   packLabel: string | null;
   packPrice: number | null;
   defaultMrp: number | null;
+  discountPercent: number | null;
   vatRate: number | null;
   stock: number;
 }
@@ -32,10 +33,13 @@ interface CartLine {
   quantity: number;
 }
 
+// unitPrice/packPrice/defaultMrp are the printed/reference price — mirrors
+// lib/pricing.ts's resolveSaleLinePricing exactly, so what the cashier
+// sees here always matches what createPosSale actually charges.
 function lineUnitPrice(product: PosProduct, saleUnit: "PIECE" | "PACK"): number | null {
-  if (!product.sellsByUnit) return product.defaultMrp;
-  if (saleUnit === "PACK") return product.packPrice;
-  return product.unitPrice;
+  const reference = !product.sellsByUnit ? product.defaultMrp : saleUnit === "PACK" ? product.packPrice : product.unitPrice;
+  if (reference == null) return null;
+  return product.discountPercent && product.discountPercent > 0 ? reference * (1 - product.discountPercent / 100) : reference;
 }
 
 function lineLabel(product: PosProduct, saleUnit: "PIECE" | "PACK"): string {

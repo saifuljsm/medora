@@ -141,6 +141,7 @@ export async function commitProductImport(
         packLabel: row.packLabel,
         packPrice: row.packPrice,
         vatRate: row.vatRate,
+        discountPercent: row.discountPercent,
         indications: row.indications,
         dosageAdministration: row.dosageAdministration,
         sideEffects: row.sideEffects,

@@ -18,6 +18,7 @@ export function productToCard(
     unitsPerPack: number | null;
     packPrice: unknown;
     defaultMrp: unknown;
+    discountPercent: unknown;
     medicine: { genericName: string; strength: string | null; requiresPrescription: boolean };
   },
   stock: number,
@@ -26,26 +27,40 @@ export function productToCard(
   const packPrice = num(product.packPrice);
   const unitPrice = num(product.unitPrice);
   const defaultMrp = num(product.defaultMrp);
+  const discountPercent = num(product.discountPercent);
+
+  // unitPrice/packPrice/defaultMrp are always the printed/reference price
+  // — mirrors lib/pricing.ts's resolveSaleLinePricing exactly, so the
+  // storefront never shows a price different from what checkout charges.
+  function discounted(reference: number | null): number | null {
+    if (reference == null) return null;
+    if (!discountPercent || discountPercent <= 0) return reference;
+    return reference * (1 - discountPercent / 100);
+  }
 
   let price: number;
+  let referencePrice: number | null = null;
   let priceLabel = "";
   let defaultSaleUnit: "PIECE" | "PACK" = "PACK";
   if (product.sellsByUnit) {
     if (packPrice != null) {
-      price = packPrice;
+      referencePrice = packPrice;
+      price = discounted(packPrice)!;
       defaultSaleUnit = "PACK";
     } else if (unitPrice != null) {
-      price = unitPrice;
+      referencePrice = unitPrice;
+      price = discounted(unitPrice)!;
       priceLabel = "from";
       defaultSaleUnit = "PIECE";
     } else {
       price = 0;
     }
   } else {
-    price = defaultMrp ?? 0;
+    referencePrice = defaultMrp;
+    price = discounted(defaultMrp) ?? 0;
   }
 
-  const mrp = defaultMrp && defaultMrp > price ? defaultMrp : null;
+  const mrp = referencePrice && referencePrice > price ? referencePrice : null;
 
   return {
     id: product.id,

@@ -56,6 +56,7 @@ export default async function PosPage() {
           packLabel: p.packLabel,
           packPrice: p.packPrice != null ? Number(p.packPrice) : null,
           defaultMrp: p.defaultMrp != null ? Number(p.defaultMrp) : null,
+          discountPercent: p.discountPercent != null ? Number(p.discountPercent) : null,
           vatRate: p.vatRate != null ? Number(p.vatRate) : null,
           stock: stockByProduct.get(p.id) ?? 0,
         }))}

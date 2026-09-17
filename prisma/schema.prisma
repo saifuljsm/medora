@@ -164,6 +164,16 @@ model Product {
   barcode    String?  @unique
   defaultMrp Decimal? @db.Decimal(10, 2)
 
+  // Uniform percentage discount, applied to whichever reference price is
+  // relevant to the sale: defaultMrp for pack-only products (cream, IV
+  // infusion, suspension), packPrice for strip/pack sales, unitPrice for
+  // single-piece sales. unitPrice/packPrice/defaultMrp are always the
+  // printed/reference price — the actual selling price is always
+  // reference * (1 - discountPercent/100), computed by lib/pricing.ts,
+  // never entered directly. Null/0 = no discount, sells at the reference
+  // price as-is.
+  discountPercent Decimal? @db.Decimal(5, 2)
+
   // Piece / pack selling — only meaningful when the DosageForm is breakable.
   // Batch.quantity is ALWAYS tracked in base units regardless of these
   // fields — one stock pool, two ways to sell it.

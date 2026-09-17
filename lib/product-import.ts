@@ -52,6 +52,9 @@ export const ProductImportRowSchema = z.object({
   packLabel: z.preprocess(emptyToUndefined, z.string().optional()),
   packPrice: z.preprocess(parseNumberLike, z.number().positive().optional()),
   vatRate: z.preprocess(parseNumberLike, z.number().min(0).max(100).optional()),
+  // Uniform % discount off whichever of defaultMrp/packPrice/unitPrice is
+  // relevant to the sale — see Product.discountPercent's schema comment.
+  discountPercent: z.preprocess(parseNumberLike, z.number().min(0).max(100).optional()),
   // Storefront display category, e.g. "Baby Care" — distinct from `category`
   // above. Matched/created by name against the Category model.
   displayCategory: z.preprocess(emptyToUndefined, z.string().optional()),
@@ -93,6 +96,7 @@ export const IMPORT_TEMPLATE_COLUMNS = [
   "packLabel",
   "packPrice",
   "vatRate",
+  "discountPercent",
   "displayCategory",
   "indications",
   "dosageAdministration",

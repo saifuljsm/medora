@@ -61,6 +61,20 @@ export interface ProductPricingInfo {
   unitsPerPack: number | null;
   packPrice: DecimalInput | null;
   defaultMrp: DecimalInput | null;
+  discountPercent: DecimalInput | null;
+}
+
+/**
+ * unitPrice/packPrice/defaultMrp are always the printed/reference price —
+ * the actual selling price is always this, minus discountPercent. There's
+ * only ever one discount mechanism per product (not "set a lower packPrice
+ * AND also a discount"), so piece/strip/pack all discount the same way.
+ */
+function applyDiscount(referencePrice: Decimal, discountPercent: DecimalInput | null): Decimal {
+  if (discountPercent == null) return referencePrice;
+  const discount = new Decimal(discountPercent);
+  if (discount.lte(0)) return referencePrice;
+  return referencePrice.mul(new Decimal(100).sub(discount)).div(100);
 }
 
 export interface SaleLinePricing {
@@ -89,7 +103,7 @@ export function resolveSaleLinePricing(params: {
 
   if (!product.sellsByUnit) {
     if (product.defaultMrp == null) throw new Error("Product has no defaultMrp set.");
-    const unitPrice = new Decimal(product.defaultMrp);
+    const unitPrice = applyDiscount(new Decimal(product.defaultMrp), product.discountPercent);
     return { baseUnitQuantity: quantity, unitPrice, lineTotal: unitPrice.mul(quantity) };
   }
 
@@ -98,7 +112,7 @@ export function resolveSaleLinePricing(params: {
       throw new Error("Product has no unitsPerPack set — cannot sell by the pack.");
     }
     if (product.packPrice == null) throw new Error("Product has no packPrice set.");
-    const packPrice = new Decimal(product.packPrice);
+    const packPrice = applyDiscount(new Decimal(product.packPrice), product.discountPercent);
     return {
       baseUnitQuantity: quantity * product.unitsPerPack,
       unitPrice: packPrice.div(product.unitsPerPack), // per base unit, for SaleItem.unitPrice
@@ -108,7 +122,7 @@ export function resolveSaleLinePricing(params: {
 
   // PIECE
   if (product.unitPrice == null) throw new Error("Product has no unitPrice set.");
-  const unitPrice = new Decimal(product.unitPrice);
+  const unitPrice = applyDiscount(new Decimal(product.unitPrice), product.discountPercent);
   return { baseUnitQuantity: quantity, unitPrice, lineTotal: unitPrice.mul(quantity) };
 }
 

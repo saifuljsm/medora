@@ -94,7 +94,9 @@ export function ProductImportClient() {
           <p className="text-xs text-muted-text">
             <code>category</code> is the clinical category (Antimicrobial, Hormone…); <code>displayCategory</code> is the storefront
             section (Baby Care, OTC Medicine…). <code>imageUrl</code> accepts a direct image link (e.g. a Dropbox share URL) — separate
-            multiple images with <code>|</code>.
+            multiple images with <code>|</code>. <code>defaultMrp</code>/<code>unitPrice</code>/<code>packPrice</code> are always the
+            printed reference price — <code>discountPercent</code> (0–100) computes the actual selling price for piece, strip, and pack
+            alike, so you never hand-calculate a discounted price.
           </p>
           <Button type="button" variant="link" size="sm" className="mx-auto" onClick={downloadTemplate}>
             Download empty template (.csv)

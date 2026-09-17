@@ -20,6 +20,7 @@ interface StaffOrderProduct {
   packLabel: string | null;
   packPrice: number | null;
   defaultMrp: number | null;
+  discountPercent: number | null;
   stock: number;
 }
 
@@ -35,9 +36,12 @@ const ORDER_SOURCES = [
   { value: "STAFF_ASSISTED", label: "In person / other" },
 ] as const;
 
+// unitPrice/packPrice/defaultMrp are the printed/reference price — mirrors
+// lib/pricing.ts's resolveSaleLinePricing exactly, so what staff sees here
+// always matches what createStaffAssistedOrder actually charges.
 function lineUnitPrice(p: StaffOrderProduct, saleUnit: "PIECE" | "PACK"): number {
-  if (!p.sellsByUnit) return p.defaultMrp ?? 0;
-  return (saleUnit === "PACK" ? p.packPrice : p.unitPrice) ?? 0;
+  const reference = !p.sellsByUnit ? p.defaultMrp ?? 0 : (saleUnit === "PACK" ? p.packPrice : p.unitPrice) ?? 0;
+  return p.discountPercent && p.discountPercent > 0 ? reference * (1 - p.discountPercent / 100) : reference;
 }
 
 export function StaffOrderForm({ products }: { products: StaffOrderProduct[] }) {

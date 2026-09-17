@@ -59,10 +59,18 @@ export function ProductEditForm({ product }: { product: UpdateProductInput }) {
             <Input type="number" step="0.01" min="0" {...register("defaultMrp")} />
           </div>
           <div className="flex flex-col gap-1.5">
+            <label className="text-xs text-muted-foreground">Discount (%)</label>
+            <Input type="number" step="0.01" min="0" max="100" {...register("discountPercent")} />
+          </div>
+          <div className="flex flex-col gap-1.5">
             <label className="text-xs text-muted-foreground">VAT rate (%)</label>
             <Input type="number" step="0.01" min="0" max="100" {...register("vatRate")} />
           </div>
         </div>
+        <p className="text-xs text-muted-text">
+          Default MRP / pack price / unit price are always the printed reference price — discount computes the actual selling price
+          automatically, for piece, pack, and single-item products alike.
+        </p>
       </section>
 
       <section className="flex flex-col gap-3">

@@ -22,15 +22,31 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
   const defaultMrp = product.defaultMrp != null ? Number(product.defaultMrp) : null;
   const unitPrice = product.unitPrice != null ? Number(product.unitPrice) : null;
   const packPrice = product.packPrice != null ? Number(product.packPrice) : null;
+  const discountPercent = product.discountPercent != null ? Number(product.discountPercent) : null;
+
+  // unitPrice/packPrice/defaultMrp are the printed/reference price — mirrors
+  // lib/pricing.ts's resolveSaleLinePricing exactly, so this selector never
+  // shows a price different from what checkout actually charges.
+  function discounted(reference: number): number {
+    return discountPercent && discountPercent > 0 ? reference * (1 - discountPercent / 100) : reference;
+  }
 
   const unitOptions = product.sellsByUnit
     ? [
-        ...(unitPrice != null ? [{ unit: "PIECE" as const, label: `1 ${product.unitLabel || "Piece"}`, price: unitPrice }] : []),
+        ...(unitPrice != null
+          ? [{ unit: "PIECE" as const, label: `1 ${product.unitLabel || "Piece"}`, price: discounted(unitPrice) }]
+          : []),
         ...(packPrice != null
-          ? [{ unit: "PACK" as const, label: `${product.packLabel || "Pack"} of ${product.unitsPerPack ?? "?"}`, price: packPrice }]
+          ? [
+              {
+                unit: "PACK" as const,
+                label: `${product.packLabel || "Pack"} of ${product.unitsPerPack ?? "?"}`,
+                price: discounted(packPrice),
+              },
+            ]
           : []),
       ]
-    : [{ unit: "PACK" as const, label: product.packSize || "Item", price: defaultMrp ?? 0 }];
+    : [{ unit: "PACK" as const, label: product.packSize || "Item", price: discounted(defaultMrp ?? 0) }];
 
   const referencePrice = productToCard(product, stock);
 
