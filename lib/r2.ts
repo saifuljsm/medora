@@ -61,3 +61,61 @@ export async function createPresignedUpload(params: {
 
   return { uploadUrl, publicUrl: `${publicBase.replace(/\/$/, "")}/${key}`, key };
 }
+
+const MAX_FETCHED_IMAGE_BYTES = 15 * 1024 * 1024; // 15MB
+
+/**
+ * A Dropbox share link (dropbox.com/s/...?dl=0) serves an HTML preview
+ * page, not the file itself — dl=1 forces the raw bytes. Left as-is for
+ * any other host (already-direct URLs, other providers).
+ */
+function normalizeSourceUrl(sourceUrl: string): string {
+  const url = new URL(sourceUrl);
+  if (url.hostname === "www.dropbox.com" || url.hostname === "dropbox.com") {
+    url.searchParams.set("dl", "1");
+  }
+  return url.toString();
+}
+
+/**
+ * Fetches an image from an arbitrary URL (e.g. a Dropbox share link) and
+ * re-uploads it to R2 server-side — used by bulk product import so a
+ * pharmacist can put an image URL in a spreadsheet column instead of using
+ * the browser upload UI per product.
+ */
+export async function uploadImageFromUrl(params: { sourceUrl: string; purpose: UploadPurpose }): Promise<PresignedUpload> {
+  const bucket = process.env.R2_BUCKET_NAME;
+  const publicBase = process.env.R2_PUBLIC_URL;
+  if (!bucket || !publicBase) {
+    throw new Error("R2 is not configured — set R2_BUCKET_NAME and R2_PUBLIC_URL (see .env.example).");
+  }
+
+  const fetchUrl = normalizeSourceUrl(params.sourceUrl);
+  const response = await fetch(fetchUrl);
+  if (!response.ok) {
+    throw new Error(`Could not download image from ${params.sourceUrl} (HTTP ${response.status})`);
+  }
+
+  const contentType = response.headers.get("content-type")?.split(";")[0].trim() ?? "";
+  if (!ALLOWED_CONTENT_TYPES.includes(contentType)) {
+    throw new Error(`URL did not return a supported image type (got "${contentType || "unknown"}"): ${params.sourceUrl}`);
+  }
+
+  const contentLength = Number(response.headers.get("content-length") ?? 0);
+  if (contentLength > MAX_FETCHED_IMAGE_BYTES) {
+    throw new Error(`Image at ${params.sourceUrl} is too large (max 15MB)`);
+  }
+
+  const body = Buffer.from(await response.arrayBuffer());
+  if (body.byteLength > MAX_FETCHED_IMAGE_BYTES) {
+    throw new Error(`Image at ${params.sourceUrl} is too large (max 15MB)`);
+  }
+
+  const extension = contentType.split("/")[1] ?? "jpg";
+  const key = `${params.purpose}/${randomUUID()}.${extension}`;
+
+  const client = getR2Client();
+  await client.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: body, ContentType: contentType }));
+
+  return { uploadUrl: "", publicUrl: `${publicBase.replace(/\/$/, "")}/${key}`, key };
+}

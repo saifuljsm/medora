@@ -4,6 +4,8 @@ import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { syncProducts } from "@/lib/meilisearch";
+import { uploadImageFromUrl } from "@/lib/r2";
+import { slugify } from "@/lib/slug";
 import {
   parseWorkbookBuffer,
   validateImportRows,
@@ -11,6 +13,22 @@ import {
   type ParsedImportRow,
   type ProductImportRow,
 } from "@/lib/product-import";
+
+async function findOrCreateCategory(orgId: string, name: string) {
+  const existing = await prisma.category.findUnique({ where: { orgId_name: { orgId, name } } });
+  if (existing) return existing;
+
+  const baseSlug = slugify(name) || "category";
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const slug = attempt === 0 ? baseSlug : `${baseSlug}-${attempt}`;
+    try {
+      return await prisma.category.create({ data: { orgId, name, slug } });
+    } catch {
+      // slug collision — retry with a suffixed slug
+    }
+  }
+  throw new Error(`Could not create display category "${name}" — slug kept colliding`);
+}
 
 async function requireCatalogManager() {
   const session = await auth();
@@ -39,7 +57,7 @@ export interface CommitImportResult {
 export async function commitProductImport(
   rows: Array<{ rowNumber: number; data: ProductImportRow }>,
 ): Promise<CommitImportResult> {
-  await requireCatalogManager();
+  const user = await requireCatalogManager();
 
   const result: CommitImportResult = { created: 0, updated: 0, failed: [] };
   const syncedProductIds: string[] = [];
@@ -66,6 +84,17 @@ export async function commitProductImport(
           })
         : null;
 
+      // Keeps the reference list (Products > Reference data) in sync with
+      // whatever's actually imported — same idea as DosageForm: Medicine.
+      // category stays free text, this table is just cross-referenced.
+      if (row.category) {
+        await prisma.medicineCategory.upsert({
+          where: { orgId_name: { orgId: user.orgId, name: row.category } },
+          update: {},
+          create: { orgId: user.orgId, name: row.category },
+        });
+      }
+
       let medicine = await prisma.medicine.findFirst({
         where: {
           genericName: { equals: row.genericName, mode: "insensitive" },
@@ -87,6 +116,18 @@ export async function commitProductImport(
         });
       }
 
+      const displayCategory = row.displayCategory ? await findOrCreateCategory(user.orgId, row.displayCategory) : null;
+
+      let images: string[] | undefined;
+      if (row.imageUrl) {
+        const urls = row.imageUrl.split("|").map((u) => u.trim()).filter(Boolean);
+        images = [];
+        for (const url of urls) {
+          const uploaded = await uploadImageFromUrl({ sourceUrl: url, purpose: "product-image" });
+          images.push(uploaded.publicUrl);
+        }
+      }
+
       const productData = {
         medicineId: medicine.id,
         brandName: row.brandName,
@@ -100,6 +141,12 @@ export async function commitProductImport(
         packLabel: row.packLabel,
         packPrice: row.packPrice,
         vatRate: row.vatRate,
+        indications: row.indications,
+        dosageAdministration: row.dosageAdministration,
+        sideEffects: row.sideEffects,
+        precautionsWarnings: row.precautionsWarnings,
+        ...(images ? { images } : {}),
+        ...(displayCategory ? { categories: { connect: [{ id: displayCategory.id }] } } : {}),
       };
 
       const existingProduct = row.barcode

@@ -18,19 +18,20 @@ model Org {
   domainVerifiedAt DateTime?
   createdAt        DateTime  @default(now())
 
-  branches         Branch[]
-  users            User[]
-  suppliers        Supplier[]
-  customers        Customer[]
-  batches          Batch[]
-  sales            Sale[]
-  purchases        PurchaseOrder[]
-  transfers        StockTransfer[]
-  coupons          Coupon[]
-  categories       Category[]
-  dosageForms      DosageForm[]
-  invoiceCounters  InvoiceCounter[]
-  stockAdjustments StockAdjustment[]
+  branches            Branch[]
+  users               User[]
+  suppliers           Supplier[]
+  customers           Customer[]
+  batches             Batch[]
+  sales               Sale[]
+  purchases           PurchaseOrder[]
+  transfers           StockTransfer[]
+  coupons             Coupon[]
+  categories          Category[]
+  dosageForms         DosageForm[]
+  medicineCategories  MedicineCategory[]
+  invoiceCounters     InvoiceCounter[]
+  stockAdjustments    StockAdjustment[]
   cashReconciliations CashReconciliation[]
 }
 
@@ -49,8 +50,8 @@ model Branch {
   sales     Sale[]
   purchases PurchaseOrder[]
 
-  transfersFrom StockTransfer[] @relation("TransferFromBranch")
-  transfersTo   StockTransfer[] @relation("TransferToBranch")
+  transfersFrom       StockTransfer[]      @relation("TransferFromBranch")
+  transfersTo         StockTransfer[]      @relation("TransferToBranch")
   cashReconciliations CashReconciliation[]
 
   @@index([orgId])
@@ -85,11 +86,11 @@ model User {
   active              Boolean   @default(true)
   createdAt           DateTime  @default(now())
 
-  reviewedPrescriptions Prescription[] @relation("ReviewedBy")
-  salesCreated          Sale[]         @relation("SaleCashier")
+  reviewedPrescriptions Prescription[]       @relation("ReviewedBy")
+  salesCreated          Sale[]               @relation("SaleCashier")
   stockAdjustments      StockAdjustment[]
-  returnsProcessed      Return[]       @relation("ReturnProcessedBy")
-  returnsApproved       Return[]       @relation("ReturnApprovedBy")
+  returnsProcessed      Return[]             @relation("ReturnProcessedBy")
+  returnsApproved       Return[]             @relation("ReturnApprovedBy")
   cashReconciliations   CashReconciliation[]
 
   @@unique([orgId, email])
@@ -114,13 +115,27 @@ model Manufacturer {
 // admin screens cross-reference it against this table and prompt once
 // when a genuinely new form appears.
 model DosageForm {
-  id         String  @id @default(cuid())
-  orgId      String
-  org        Org     @relation(fields: [orgId], references: [id])
-  name       String  // "Tablet", "Vial", "Suppository", "Cream"...
-  breakable  Boolean @default(false)
-  unitLabel  String? // "Tablet", "Vial", "Sachet" — the piece
-  packLabel  String? // "Strip", "Box", "Tube" — the full pack
+  id        String  @id @default(cuid())
+  orgId     String
+  org       Org     @relation(fields: [orgId], references: [id])
+  name      String // "Tablet", "Vial", "Suppository", "Cream"...
+  breakable Boolean @default(false)
+  unitLabel String? // "Tablet", "Vial", "Sachet" — the piece
+  packLabel String? // "Strip", "Box", "Tube" — the full pack
+
+  @@unique([orgId, name])
+}
+
+// Same pattern as DosageForm: admin-managed reference list, cross-
+// referenced against Medicine.category, which stays free text so existing
+// rows/imports never need backfilling. Clinical/therapeutic category
+// ("Antimicrobial", "Hormone"...) — distinct from the storefront Category
+// model (Baby Care, OTC Medicine...), which is what shoppers browse by.
+model MedicineCategory {
+  id    String @id @default(cuid())
+  orgId String
+  org   Org    @relation(fields: [orgId], references: [id])
+  name  String
 
   @@unique([orgId, name])
 }
@@ -130,7 +145,7 @@ model Medicine {
   genericName          String
   form                 String
   strength             String?
-  category             String?       // clinical/therapeutic category — distinct from storefront Category
+  category             String? // clinical/therapeutic category — distinct from storefront Category
   requiresPrescription Boolean       @default(false)
   manufacturerId       String?
   manufacturer         Manufacturer? @relation(fields: [manufacturerId], references: [id])
@@ -153,10 +168,10 @@ model Product {
   // Batch.quantity is ALWAYS tracked in base units regardless of these
   // fields — one stock pool, two ways to sell it.
   sellsByUnit  Boolean  @default(false)
-  unitLabel    String?  // "Tablet", "Vial"
+  unitLabel    String? // "Tablet", "Vial"
   unitPrice    Decimal? @db.Decimal(10, 2)
   unitsPerPack Int?
-  packLabel    String?  // "Strip", "Box"
+  packLabel    String? // "Strip", "Box"
   packPrice    Decimal? @db.Decimal(10, 2)
 
   // VAT — most medicines are exempt in Bangladesh; FMCG/wellness often aren't.
@@ -169,6 +184,14 @@ model Product {
   images           String[]
   metaTitle        String?
   metaDescription  String?
+
+  // Structured content sections shown as their own accordion section on
+  // the product page. Pharmacist-authored (via bulk import or the product
+  // edit form) — never auto-generated, since this is real clinical content.
+  indications          String? @db.Text
+  dosageAdministration String? @db.Text
+  sideEffects          String? @db.Text
+  precautionsWarnings  String? @db.Text
 
   batches       Batch[]
   saleItems     SaleItem[]
@@ -215,17 +238,17 @@ model Batch {
   product       Product     @relation(fields: [productId], references: [id])
   batchNumber   String
   expiryDate    DateTime
-  quantity      Int         // ALWAYS base units — tablets, vials, never strips/boxes
+  quantity      Int // ALWAYS base units — tablets, vials, never strips/boxes
   purchasePrice Decimal     @db.Decimal(10, 2) // per base unit
   sellingPrice  Decimal     @db.Decimal(10, 2) // per base unit (legacy; piece/pack pricing lives on Product)
   source        BatchSource @default(PURCHASE_ORDER)
   createdAt     DateTime    @default(now())
 
-  saleItems         SaleItem[]
-  purchaseItems     PurchaseOrderItem[]
-  transferItems     StockTransferItem[]
-  stockAdjustments  StockAdjustment[]
-  returnItems       ReturnItem[]
+  saleItems        SaleItem[]
+  purchaseItems    PurchaseOrderItem[]
+  transferItems    StockTransferItem[]
+  stockAdjustments StockAdjustment[]
+  returnItems      ReturnItem[]
 
   @@index([orgId, branchId])
   @@index([productId])
@@ -326,17 +349,17 @@ enum StockAdjustmentReason {
 }
 
 model StockAdjustment {
-  id            String                 @id @default(cuid())
-  orgId         String
-  org           Org                    @relation(fields: [orgId], references: [id])
-  batchId       String
-  batch         Batch                  @relation(fields: [batchId], references: [id])
-  quantity      Int                    // negative delta
-  reason        StockAdjustmentReason
-  note          String?
-  adjustedById  String
-  adjustedBy    User                   @relation(fields: [adjustedById], references: [id])
-  createdAt     DateTime               @default(now())
+  id           String                @id @default(cuid())
+  orgId        String
+  org          Org                   @relation(fields: [orgId], references: [id])
+  batchId      String
+  batch        Batch                 @relation(fields: [batchId], references: [id])
+  quantity     Int // negative delta
+  reason       StockAdjustmentReason
+  note         String?
+  adjustedById String
+  adjustedBy   User                  @relation(fields: [adjustedById], references: [id])
+  createdAt    DateTime              @default(now())
 
   @@index([orgId, batchId])
 }
@@ -351,7 +374,7 @@ model Customer {
   org             Org       @relation(fields: [orgId], references: [id])
   name            String?
   phone           String?
-  passwordHash    String?   // null for guest, staff-created bare records, or social-only accounts
+  passwordHash    String? // null for guest, staff-created bare records, or social-only accounts
   phoneVerifiedAt DateTime?
   email           String?
   oauthProvider   String?
@@ -440,7 +463,7 @@ model Sale {
   channel           SaleChannel   @default(POS)
   status            OrderStatus   @default(COMPLETED)
   paymentMethod     PaymentMethod
-  orderSource       OrderSource?  // null for POS; set for ONLINE
+  orderSource       OrderSource? // null for POS; set for ONLINE
   shippingAddressId String?
   shippingAddress   Address?      @relation(fields: [shippingAddressId], references: [id])
   couponId          String?
@@ -471,7 +494,7 @@ model SaleItem {
   product   Product @relation(fields: [productId], references: [id])
   batchId   String
   batch     Batch   @relation(fields: [batchId], references: [id])
-  quantity  Int     // base units
+  quantity  Int // base units
   unitPrice Decimal @db.Decimal(10, 2)
 
   returnItems ReturnItem[]
@@ -570,7 +593,7 @@ enum PrescriptionStatus {
 model Prescription {
   id           String             @id @default(cuid())
   orgId        String
-  saleId       String?            // nullable — standalone prescription-first uploads have no Sale yet
+  saleId       String? // nullable — standalone prescription-first uploads have no Sale yet
   sale         Sale?              @relation(fields: [saleId], references: [id])
   customerId   String?
   customer     Customer?          @relation(fields: [customerId], references: [id])
@@ -598,33 +621,33 @@ enum RefundMethod {
 // item required a prescription — the prescription gate applies only
 // on the sale side, never mirrored onto returns.
 model Return {
-  id             String       @id @default(cuid())
-  saleId         String
-  sale           Sale         @relation(fields: [saleId], references: [id])
-  reason         String
-  refundMethod   RefundMethod
-  refundAmount   Decimal      @db.Decimal(10, 2)
-  processedById  String
-  processedBy    User         @relation("ReturnProcessedBy", fields: [processedById], references: [id])
-  approvedById   String?      // unused by current rules, kept for future policy changes
-  approvedBy     User?        @relation("ReturnApprovedBy", fields: [approvedById], references: [id])
-  createdAt      DateTime     @default(now())
+  id            String       @id @default(cuid())
+  saleId        String
+  sale          Sale         @relation(fields: [saleId], references: [id])
+  reason        String
+  refundMethod  RefundMethod
+  refundAmount  Decimal      @db.Decimal(10, 2)
+  processedById String
+  processedBy   User         @relation("ReturnProcessedBy", fields: [processedById], references: [id])
+  approvedById  String? // unused by current rules, kept for future policy changes
+  approvedBy    User?        @relation("ReturnApprovedBy", fields: [approvedById], references: [id])
+  createdAt     DateTime     @default(now())
 
   items ReturnItem[]
 }
 
 model ReturnItem {
-  id           String   @id @default(cuid())
-  returnId     String
-  return       Return   @relation(fields: [returnId], references: [id])
-  saleItemId   String
-  saleItem     SaleItem @relation(fields: [saleItemId], references: [id])
-  productId    String
-  product      Product  @relation(fields: [productId], references: [id])
-  batchId      String?  // set when restock = true
-  batch        Batch?   @relation(fields: [batchId], references: [id])
-  quantity     Int
-  restock      Boolean  // true = back to Batch.quantity; false = routes to a StockAdjustment write-off
+  id         String   @id @default(cuid())
+  returnId   String
+  return     Return   @relation(fields: [returnId], references: [id])
+  saleItemId String
+  saleItem   SaleItem @relation(fields: [saleItemId], references: [id])
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
+  batchId    String? // set when restock = true
+  batch      Batch?   @relation(fields: [batchId], references: [id])
+  quantity   Int
+  restock    Boolean // true = back to Batch.quantity; false = routes to a StockAdjustment write-off
 }
 
 // Per-org, per-channel, per-year running number. Incremented inside

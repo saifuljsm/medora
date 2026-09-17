@@ -12,9 +12,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { parseProductImportFile, commitProductImport, type CommitImportResult } from "@/app/(admin)/products/import/actions";
-import type { ParsedImportRow } from "@/lib/product-import";
+import { IMPORT_TEMPLATE_COLUMNS, type ParsedImportRow } from "@/lib/product-import";
 
 type Step = "upload" | "preview" | "done";
+
+function downloadTemplate() {
+  const csv = IMPORT_TEMPLATE_COLUMNS.join(",") + "\n";
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "medora-product-import-template.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export function ProductImportClient() {
   const [step, setStep] = useState<Step>("upload");
@@ -79,11 +90,15 @@ export function ProductImportClient() {
           <p className="text-sm text-muted-foreground">
             Upload a .csv or .xlsx file. Expected columns:
           </p>
+          <p className="text-xs text-muted-text">{IMPORT_TEMPLATE_COLUMNS.join(", ")}</p>
           <p className="text-xs text-muted-text">
-            genericName, form, brandName, strength, category, requiresPrescription, manufacturer,
-            packSize, barcode, defaultMrp, sellsByUnit, unitLabel, unitPrice, unitsPerPack,
-            packLabel, packPrice, vatRate
+            <code>category</code> is the clinical category (Antimicrobial, Hormone…); <code>displayCategory</code> is the storefront
+            section (Baby Care, OTC Medicine…). <code>imageUrl</code> accepts a direct image link (e.g. a Dropbox share URL) — separate
+            multiple images with <code>|</code>.
           </p>
+          <Button type="button" variant="link" size="sm" className="mx-auto" onClick={downloadTemplate}>
+            Download empty template (.csv)
+          </Button>
           <input
             ref={fileInputRef}
             type="file"

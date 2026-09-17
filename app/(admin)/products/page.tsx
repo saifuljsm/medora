@@ -33,9 +33,14 @@ export default async function ProductsPage() {
         title="Products"
         description={`${products.length} product${products.length === 1 ? "" : "s"} in your catalog`}
         actions={
-          <Button asChild variant="outline">
-            <Link href="/products/import">Bulk import</Link>
-          </Button>
+          <>
+            <Button asChild variant="outline">
+              <Link href="/products/reference-data">Reference data</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/products/import">Bulk import</Link>
+            </Button>
+          </>
         }
       />
       <div className="overflow-x-auto rounded-xl border border-border bg-card">

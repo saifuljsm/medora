@@ -10,6 +10,7 @@ export type AdminNavIconName =
   | "orders"
   | "returns"
   | "products"
+  | "referenceData"
   | "purchaseOrders"
   | "suppliers"
   | "quickEntry"
@@ -49,7 +50,10 @@ const NAV_SECTIONS: AdminNavSection[] = [
   },
   {
     label: "Catalog",
-    items: [{ href: "/products", label: "Products", icon: "products", capability: "catalog:manage" }],
+    items: [
+      { href: "/products", label: "Products", icon: "products", capability: "catalog:manage" },
+      { href: "/products/reference-data", label: "Reference data", icon: "referenceData", capability: "catalog:manage" },
+    ],
   },
   {
     label: "Purchasing",

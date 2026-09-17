@@ -16,6 +16,7 @@ import {
   Bike,
   FileCheck2,
   Settings,
+  BookMarked,
   type LucideIcon,
 } from "lucide-react";
 import type { AdminNavSection, AdminNavIconName } from "@/lib/admin-nav";
@@ -26,6 +27,7 @@ const ICONS: Record<AdminNavIconName, LucideIcon> = {
   orders: Package,
   returns: Undo2,
   products: Package,
+  referenceData: BookMarked,
   purchaseOrders: ClipboardList,
   suppliers: Truck,
   quickEntry: ClipboardList,

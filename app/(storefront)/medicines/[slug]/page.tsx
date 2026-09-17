@@ -36,11 +36,19 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
 
   const sections: AccordionSection[] = [];
   if (product.description || product.shortDescription) {
-    sections.push({
-      title: "Product overview",
-      openByDefault: true,
-      body: <p>{product.description || product.shortDescription}</p>,
-    });
+    sections.push({ title: "Product overview", body: <p>{product.description || product.shortDescription}</p> });
+  }
+  if (product.indications) {
+    sections.push({ title: "Indications", body: <p className="whitespace-pre-line">{product.indications}</p> });
+  }
+  if (product.dosageAdministration) {
+    sections.push({ title: "Dosage & Administration", body: <p className="whitespace-pre-line">{product.dosageAdministration}</p> });
+  }
+  if (product.sideEffects) {
+    sections.push({ title: "Side Effects", body: <p className="whitespace-pre-line">{product.sideEffects}</p> });
+  }
+  if (product.precautionsWarnings) {
+    sections.push({ title: "Precautions & Warnings", body: <p className="whitespace-pre-line">{product.precautionsWarnings}</p> });
   }
   if (product.medicine.manufacturer) {
     sections.push({
@@ -54,8 +62,9 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
     });
   }
   if (sections.length === 0) {
-    sections.push({ title: "Product overview", openByDefault: true, body: <p>No additional details yet.</p> });
+    sections.push({ title: "Product overview", body: <p>No additional details yet.</p> });
   }
+  sections[0].openByDefault = true;
 
   return (
     <div className="pt-4 lg:grid lg:grid-cols-2 lg:gap-10 lg:px-0 lg:pt-0">
