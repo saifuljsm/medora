@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getOrg } from "@/lib/org";
@@ -19,12 +21,25 @@ export default async function CategoryListingPage({ params }: { params: { catego
   const cards = products.map((p) => productToCard(p, stockByProduct.get(p.id) ?? 0));
 
   return (
-    <div className="pt-4 lg:px-0">
-      <div className="mb-1">
-        <h1 className="mb-0.5 text-base font-bold text-foreground lg:text-2xl">{category.name}</h1>
-        <span className="text-xs text-muted-foreground">{cards.length} products</span>
+    <div className="pt-3 lg:px-0 lg:pt-4">
+      <nav className="mb-2.5 flex items-center gap-1 px-3 text-[11.5px] text-muted-text lg:px-0">
+        <Link href="/" className="hover:text-foreground">
+          Home
+        </Link>
+        <ChevronRight className="h-3 w-3 shrink-0" strokeWidth={2} />
+        <Link href="/categories" className="hover:text-foreground">
+          Categories
+        </Link>
+        <ChevronRight className="h-3 w-3 shrink-0" strokeWidth={2} />
+        <span className="truncate font-semibold text-foreground">{category.name}</span>
+      </nav>
+
+      <div className="mb-3 flex items-center justify-between px-3 lg:px-0">
+        <h1 className="text-base font-bold text-foreground lg:text-2xl">Products</h1>
+        <span className="text-xs text-muted-foreground">{cards.length} items</span>
       </div>
-      <div className="mt-3.5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+
+      <div className="grid grid-cols-2 gap-2.5 px-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 lg:px-0">
         {cards.map((card) => (
           <ProductCard key={card.id} product={card} wide />
         ))}
