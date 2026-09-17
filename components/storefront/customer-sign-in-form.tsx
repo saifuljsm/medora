@@ -12,7 +12,7 @@ const OTP_ERROR_MESSAGES: Record<string, string> = {
   CredentialsSignin: "That code is incorrect or has expired.",
 };
 
-export function CustomerSignInForm() {
+export function CustomerSignInForm({ redirectTo = "/account" }: { redirectTo?: string }) {
   const router = useRouter();
   const [step, setStep] = useState<"phone" | "code">("phone");
   const [phone, setPhone] = useState("");
@@ -45,7 +45,7 @@ export function CustomerSignInForm() {
       return;
     }
 
-    router.push("/account");
+    router.push(redirectTo);
     router.refresh();
   }
 

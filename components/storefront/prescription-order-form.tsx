@@ -7,9 +7,8 @@ import { Input } from "@/components/ui/input";
 import { PrescriptionUpload } from "@/components/storefront/prescription-upload";
 import { submitPrescriptionAction } from "@/app/(storefront)/prescription-order/actions";
 
-export function PrescriptionOrderForm() {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+export function PrescriptionOrderForm({ initialName }: { initialName: string }) {
+  const [name, setName] = useState(initialName);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -23,7 +22,7 @@ export function PrescriptionOrderForm() {
     }
     setError(null);
     startTransition(async () => {
-      const result = await submitPrescriptionAction({ name, phone, imageUrl });
+      const result = await submitPrescriptionAction({ name, imageUrl });
       if (!result.success) {
         setError(result.error);
         return;
@@ -38,8 +37,11 @@ export function PrescriptionOrderForm() {
         <FileCheck2 className="h-8 w-8 text-success" strokeWidth={1.8} />
         <p className="text-sm font-semibold text-foreground">Prescription received</p>
         <p className="max-w-xs text-xs text-muted-foreground">
-          Our pharmacist will review it shortly. Once approved, you can check out with any items that need this prescription.
-          We&apos;ll call {phone} if we have questions.
+          Our pharmacist will review it shortly. Track its status any time from{" "}
+          <a href="/account" className="font-semibold text-primary underline">
+            your account
+          </a>
+          .
         </p>
       </div>
     );
@@ -50,10 +52,6 @@ export function PrescriptionOrderForm() {
       <div>
         <label className="mb-1 block text-[12.5px] font-semibold text-foreground">Your name</label>
         <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Abdul Karim" required />
-      </div>
-      <div>
-        <label className="mb-1 block text-[12.5px] font-semibold text-foreground">Phone number</label>
-        <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="01XXXXXXXXX" required />
       </div>
       <div>
         <label className="mb-1 block text-[12.5px] font-semibold text-foreground">Prescription photo</label>

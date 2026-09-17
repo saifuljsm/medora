@@ -1,7 +1,14 @@
 import { FileText } from "lucide-react";
+import { auth } from "@/lib/auth";
 import { PrescriptionOrderForm } from "@/components/storefront/prescription-order-form";
+import { CustomerSignInForm } from "@/components/storefront/customer-sign-in-form";
 
-export default function PrescriptionOrderPage() {
+export const dynamic = "force-dynamic";
+
+export default async function PrescriptionOrderPage() {
+  const session = await auth();
+  const isCustomer = session?.user?.type === "customer";
+
   return (
     <div className="pt-4 lg:mx-auto lg:max-w-lg lg:px-0 lg:pt-6">
       <div className="mb-4 flex items-center gap-2.5">
@@ -14,7 +21,16 @@ export default function PrescriptionOrderPage() {
         </div>
       </div>
 
-      <PrescriptionOrderForm />
+      {isCustomer ? (
+        <PrescriptionOrderForm initialName={session!.user.name} />
+      ) : (
+        <>
+          <div className="mb-4 rounded-lg border border-warning bg-warning-tint px-3 py-2.5 text-xs font-semibold text-warning">
+            Sign in with your phone first — this confirms the prescription is really yours before a pharmacist reviews it.
+          </div>
+          <CustomerSignInForm redirectTo="/prescription-order" />
+        </>
+      )}
     </div>
   );
 }

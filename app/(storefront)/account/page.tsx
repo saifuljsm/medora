@@ -1,4 +1,4 @@
-import { User, Package } from "lucide-react";
+import { User, Package, FileText } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { CustomerSignInForm } from "@/components/storefront/customer-sign-in-form";
@@ -25,11 +25,24 @@ export default async function AccountPage() {
     );
   }
 
-  const orders = await prisma.sale.findMany({
-    where: { customerId: session.user.id, channel: "ONLINE" },
-    orderBy: { createdAt: "desc" },
-    take: 20,
-  });
+  const [orders, prescriptions] = await Promise.all([
+    prisma.sale.findMany({
+      where: { customerId: session.user.id, channel: "ONLINE" },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    }),
+    prisma.prescription.findMany({
+      where: { customerId: session.user.id },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    }),
+  ]);
+
+  const RX_STATUS_STYLES: Record<string, string> = {
+    PENDING: "bg-warning-tint text-warning",
+    APPROVED: "bg-success-tint text-success",
+    REJECTED: "bg-destructive-tint text-destructive",
+  };
 
   return (
     <div className="mx-auto max-w-lg pt-6 lg:pt-6">
@@ -60,6 +73,40 @@ export default async function AccountPage() {
                 <p className="text-xs text-muted-text">{o.status.replace("_", " ")}</p>
               </div>
               <span className="shrink-0 text-sm font-bold text-primary">৳{o.total.toString()}</span>
+            </a>
+          ))}
+        </div>
+      )}
+
+      <h2 className="mb-2.5 mt-6 text-sm font-bold text-foreground">Your prescriptions</h2>
+      {prescriptions.length === 0 ? (
+        <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
+          No prescriptions uploaded yet.{" "}
+          <a href="/prescription-order" className="font-semibold text-primary underline">
+            Upload one
+          </a>
+          .
+        </p>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {prescriptions.map((p) => (
+            <a
+              key={p.id}
+              href={p.imageUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 rounded-xl border border-border bg-card p-3.5 hover:border-primary"
+            >
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-tint">
+                <FileText className="h-4 w-4 text-primary" strokeWidth={2} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-foreground">
+                  Uploaded {p.createdAt.toLocaleDateString("en-BD", { dateStyle: "medium" })}
+                </p>
+                {p.status === "REJECTED" && <p className="text-xs text-muted-text">Contact us if you think this is a mistake.</p>}
+              </div>
+              <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold ${RX_STATUS_STYLES[p.status]}`}>{p.status}</span>
             </a>
           ))}
         </div>
