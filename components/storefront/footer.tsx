@@ -66,8 +66,19 @@ export function Footer() {
           </ul>
         </div>
       </div>
-      <div className="mx-auto max-w-[430px] border-t border-background/15 px-0 py-4 text-center text-[11px] text-background/50 sm:max-w-2xl md:max-w-4xl lg:max-w-6xl lg:px-8">
-        © {new Date().getFullYear()} Medora. All rights reserved.
+      <div className="mx-auto flex max-w-[430px] flex-col items-center gap-2 border-t border-background/15 px-0 py-4 text-center text-[11px] text-background/50 sm:max-w-2xl md:max-w-4xl lg:max-w-6xl lg:flex-row lg:justify-between lg:px-8">
+        <span>© {new Date().getFullYear()} Medora. All rights reserved.</span>
+        <div className="flex gap-4">
+          <Link href="/privacy-policy" className="hover:text-background">
+            Privacy Policy
+          </Link>
+          <Link href="/terms" className="hover:text-background">
+            Terms of Service
+          </Link>
+          <Link href="/return-policy" className="hover:text-background">
+            Returns
+          </Link>
+        </div>
       </div>
     </footer>
   );
