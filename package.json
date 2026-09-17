@@ -9,9 +9,7 @@
     "lint": "next lint",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio",
-    "worker:expiry-check": "tsx lib/workers/expiry-check-worker.ts",
-    "worker:meilisearch-sync": "tsx lib/workers/meilisearch-sync-worker.ts"
+    "db:studio": "prisma studio"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -30,7 +28,6 @@
     "@sentry/nextjs": "^10.75.0",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^3.0.3",
-    "bullmq": "^6.3.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "exceljs": "^4.4.0",

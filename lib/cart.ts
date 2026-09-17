@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { cookies } from "next/headers";
-import { redisConnection } from "@/lib/queue";
+import { redisConnection } from "@/lib/redis";
 import { prisma } from "@/lib/prisma";
 import { resolveSaleLinePricing, type SaleUnit } from "@/lib/pricing";
 import { getStockByProduct } from "@/lib/storefront";

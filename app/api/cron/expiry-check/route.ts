@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { expiryCheckQueue } from "@/lib/queue";
+import { runExpiryCheck } from "@/lib/expiry-check";
 
-// Triggered by Vercel Cron (vercel.json) in production. A worker process
-// (lib/workers/expiry-check-worker.ts) must be running to actually consume
-// jobs from this queue — see package.json's `worker:expiry-check` script.
+// Triggered by Vercel Cron (vercel.json), once daily. Runs inline within
+// this serverless function — see lib/redis.ts for why this isn't a BullMQ
+// queue+worker.
 export async function GET() {
-  const job = await expiryCheckQueue.add("expiry-check", {});
-  return NextResponse.json({ enqueued: true, jobId: job.id });
+  const results = await runExpiryCheck();
+  console.log("[expiry-check]", JSON.stringify(results));
+  return NextResponse.json({ ok: true, results });
 }

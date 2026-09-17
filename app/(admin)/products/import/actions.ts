@@ -3,7 +3,7 @@
 import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
-import { meilisearchSyncQueue } from "@/lib/queue";
+import { syncProducts } from "@/lib/meilisearch";
 import {
   parseWorkbookBuffer,
   validateImportRows,
@@ -125,7 +125,7 @@ export async function commitProductImport(
   }
 
   if (syncedProductIds.length > 0) {
-    await meilisearchSyncQueue.add("sync", { productIds: syncedProductIds });
+    await syncProducts(syncedProductIds);
   }
 
   return result;

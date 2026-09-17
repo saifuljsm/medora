@@ -1,6 +1,4 @@
-import { Worker } from "bullmq";
 import { prisma } from "@/lib/prisma";
-import { redisConnection, QUEUE_NAMES } from "@/lib/queue";
 
 const EXPIRY_WARNING_WINDOW_DAYS = 90;
 
@@ -18,7 +16,7 @@ export interface ExpiryCheckResult {
  * expiry-alerts source of truth; wiring an actual notification is future
  * work once a channel is decided.
  */
-async function runExpiryCheck(): Promise<ExpiryCheckResult[]> {
+export async function runExpiryCheck(): Promise<ExpiryCheckResult[]> {
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() + EXPIRY_WARNING_WINDOW_DAYS);
 
@@ -40,22 +38,4 @@ async function runExpiryCheck(): Promise<ExpiryCheckResult[]> {
   }
 
   return results;
-}
-
-export function startExpiryCheckWorker(): Worker {
-  return new Worker(
-    QUEUE_NAMES.expiryCheck,
-    async () => {
-      const results = await runExpiryCheck();
-      console.log("[expiry-check]", JSON.stringify(results));
-      return results;
-    },
-    { connection: redisConnection },
-  );
-}
-
-if (require.main === module) {
-  const worker = startExpiryCheckWorker();
-  console.log("expiry-check worker listening…");
-  process.on("SIGINT", () => worker.close().then(() => process.exit(0)));
 }

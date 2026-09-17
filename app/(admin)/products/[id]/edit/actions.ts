@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
-import { meilisearchSyncQueue } from "@/lib/queue";
+import { syncProducts } from "@/lib/meilisearch";
 
 const UpdateProductSchema = z.object({
   id: z.string().min(1),
@@ -92,7 +92,7 @@ export async function updateProduct(input: UpdateProductInput): Promise<{ succes
     return { success: false, error: error instanceof Error ? error.message : "Update failed" };
   }
 
-  await meilisearchSyncQueue.add("sync", { productIds: [data.id] });
+  await syncProducts([data.id]);
 
   revalidatePath(`/products/${data.id}/edit`);
   revalidatePath("/products");

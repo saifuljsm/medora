@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { redisConnection } from "@/lib/queue";
+import { redisConnection } from "@/lib/redis";
 
 const CODE_TTL_SECONDS = 300; // 5 minutes
 const COOLDOWN_SECONDS = 60; // between requests for the same phone
