@@ -14,6 +14,9 @@ import ExcelJS from "exceljs";
  */
 
 function emptyToUndefined(value: unknown): unknown {
+  // Excel leaves a genuinely blank cell as `null` (not "") via ExcelJS —
+  // CSV blanks come through as "" instead, so both must be handled here.
+  if (value === null) return undefined;
   if (typeof value === "string" && value.trim() === "") return undefined;
   return value;
 }
