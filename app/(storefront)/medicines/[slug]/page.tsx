@@ -66,6 +66,22 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
   if (product.precautionsWarnings) {
     sections.push({ title: "Precautions & Warnings", body: <p className="whitespace-pre-line">{product.precautionsWarnings}</p> });
   }
+  const faq = Array.isArray(product.faq) ? (product.faq as { question: string; answer: string }[]) : [];
+  if (faq.length > 0) {
+    sections.push({
+      title: "Frequently Asked Questions",
+      body: (
+        <div className="flex flex-col gap-3">
+          {faq.map((item, i) => (
+            <div key={i}>
+              <p className="text-[13px] font-semibold text-foreground">Q: {item.question}</p>
+              <p className="mt-0.5 whitespace-pre-line text-[13px] text-muted-foreground">A: {item.answer}</p>
+            </div>
+          ))}
+        </div>
+      ),
+    });
+  }
   if (product.medicine.manufacturer) {
     sections.push({
       title: "Manufacturer",

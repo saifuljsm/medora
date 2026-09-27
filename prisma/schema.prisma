@@ -196,12 +196,18 @@ model Product {
   metaDescription  String?
 
   // Structured content sections shown as their own accordion section on
-  // the product page. Pharmacist-authored (via bulk import or the product
-  // edit form) — never auto-generated, since this is real clinical content.
+  // the product page. Generic, optional, usable for any product type
+  // (medicine or FMCG/wellness — Baby Care, Hair Care, etc.), not just
+  // clinical content. Staff-authored via bulk import — never auto-generated.
   indications          String? @db.Text
   dosageAdministration String? @db.Text
   sideEffects          String? @db.Text
   precautionsWarnings  String? @db.Text
+  // Array of up to 5 {question, answer} pairs, e.g.
+  // [{"question": "...", "answer": "..."}, ...]. Assembled from
+  // faqQuestion1..5/faqAnswer1..5 import columns, filtering out any pair
+  // where either side is empty.
+  faq                  Json?
 
   batches       Batch[]
   saleItems     SaleItem[]

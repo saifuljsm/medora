@@ -96,7 +96,11 @@ export function ProductImportClient() {
             section (Baby Care, OTC Medicine…). <code>imageUrl</code> accepts a direct image link (e.g. a Dropbox share URL) — separate
             multiple images with <code>|</code>. <code>defaultMrp</code>/<code>unitPrice</code>/<code>packPrice</code> are always the
             printed reference price — <code>discountPercent</code> (0–100) computes the actual selling price for piece, strip, and pack
-            alike, so you never hand-calculate a discounted price.
+            alike, so you never hand-calculate a discounted price. <code>indications</code>/<code>dosageAdministration</code>/
+            <code>sideEffects</code>/<code>precautionsWarnings</code> work for any product type, not just medicine — use whatever fits
+            (e.g. key benefits / how to use / ingredients for Baby Care, Hair Care, etc). <code>faqQuestion1</code>/
+            <code>faqAnswer1</code> through <code>faqQuestion5</code>/<code>faqAnswer5</code> add up to 5 FAQ pairs — a pair only shows
+            up if both the question and answer are filled in.
           </p>
           <Button type="button" variant="link" size="sm" className="mx-auto" onClick={downloadTemplate}>
             Download empty template (.csv)

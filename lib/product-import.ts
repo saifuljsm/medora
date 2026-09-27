@@ -64,10 +64,37 @@ export const ProductImportRowSchema = z.object({
   dosageAdministration: z.preprocess(emptyToUndefined, z.string().optional()),
   sideEffects: z.preprocess(emptyToUndefined, z.string().optional()),
   precautionsWarnings: z.preprocess(emptyToUndefined, z.string().optional()),
+  // Up to 5 FAQ pairs — a pair is only kept if BOTH question and answer are
+  // filled in (see assembleFaq below).
+  faqQuestion1: z.preprocess(emptyToUndefined, z.string().optional()),
+  faqAnswer1: z.preprocess(emptyToUndefined, z.string().optional()),
+  faqQuestion2: z.preprocess(emptyToUndefined, z.string().optional()),
+  faqAnswer2: z.preprocess(emptyToUndefined, z.string().optional()),
+  faqQuestion3: z.preprocess(emptyToUndefined, z.string().optional()),
+  faqAnswer3: z.preprocess(emptyToUndefined, z.string().optional()),
+  faqQuestion4: z.preprocess(emptyToUndefined, z.string().optional()),
+  faqAnswer4: z.preprocess(emptyToUndefined, z.string().optional()),
+  faqQuestion5: z.preprocess(emptyToUndefined, z.string().optional()),
+  faqAnswer5: z.preprocess(emptyToUndefined, z.string().optional()),
   // Direct image URL (e.g. a Dropbox share link) — fetched and re-uploaded
   // to R2 server-side at commit time. Multiple images: separate with `|`.
   imageUrl: z.preprocess(emptyToUndefined, z.string().optional()),
 });
+
+/** Assembles the 5 faqQuestion/faqAnswer column pairs into the {question, answer}[] stored on Product.faq — drops any pair missing either side. */
+export function assembleFaq(row: ProductImportRow): { question: string; answer: string }[] | undefined {
+  const pairs = [
+    [row.faqQuestion1, row.faqAnswer1],
+    [row.faqQuestion2, row.faqAnswer2],
+    [row.faqQuestion3, row.faqAnswer3],
+    [row.faqQuestion4, row.faqAnswer4],
+    [row.faqQuestion5, row.faqAnswer5],
+  ] as const;
+  const faq = pairs
+    .filter((pair): pair is [string, string] => Boolean(pair[0] && pair[1]))
+    .map(([question, answer]) => ({ question, answer }));
+  return faq.length > 0 ? faq : undefined;
+}
 
 export type ProductImportRow = z.infer<typeof ProductImportRowSchema>;
 
@@ -102,6 +129,16 @@ export const IMPORT_TEMPLATE_COLUMNS = [
   "dosageAdministration",
   "sideEffects",
   "precautionsWarnings",
+  "faqQuestion1",
+  "faqAnswer1",
+  "faqQuestion2",
+  "faqAnswer2",
+  "faqQuestion3",
+  "faqAnswer3",
+  "faqQuestion4",
+  "faqAnswer4",
+  "faqQuestion5",
+  "faqAnswer5",
   "imageUrl",
 ] as const;
 

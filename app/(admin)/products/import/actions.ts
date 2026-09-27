@@ -10,6 +10,7 @@ import {
   parseWorkbookBuffer,
   validateImportRows,
   ProductImportRowSchema,
+  assembleFaq,
   type ParsedImportRow,
   type ProductImportRow,
 } from "@/lib/product-import";
@@ -146,6 +147,7 @@ export async function commitProductImport(
         dosageAdministration: row.dosageAdministration,
         sideEffects: row.sideEffects,
         precautionsWarnings: row.precautionsWarnings,
+        faq: assembleFaq(row),
         ...(images ? { images } : {}),
         ...(displayCategory ? { categories: { connect: [{ id: displayCategory.id }] } } : {}),
       };
